@@ -4,6 +4,12 @@ import datetime
 # TODO: Prompt user for base rate, call time, wrap time, whether overtime was warned, and if it was a weekend.
 # This should be enough to calculate the pay for a single day's work.
 
+# These accumulate gradually as you enter hours
+normal_hours =  0.0
+ot1_hours =  0.0
+ot2_hours =  0.0
+ot3_hours =  0.0
+
 baserate = int(input("What's your base dayrate (sats)? "))
 hourly_rate = baserate/7.5
 
@@ -24,6 +30,8 @@ def timeInput(prompt):
 
 while True:
     calltime = timeInput("Your call time (24-hour format, hhmm. Leave blank to continue.): ")
+    # TODO: Detect turnover problems here, because the previous wraptime is still left over from the previous looparound
+    # Though you may still need cache the previous two times before you write those hours to the accumulators. We'll see.
     if calltime == "":
         break
     wraptime = timeInput("Your wrap time (24-hour format, hhmm): ")
