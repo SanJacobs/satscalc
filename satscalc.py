@@ -20,6 +20,7 @@ print("\nTime to add your hours of work.")
 def timeInput(prompt):
     while True:
         i = input(prompt)
+        # If empty, return empty string
         if i=="": return ""
         elif len(i)==4: break
         print("Wrong format. Try again.")
@@ -43,12 +44,13 @@ while True:
     hours_worked = difference.total_seconds()/3600
     
     # TODO: This part makes no sense. Don't worry. It'll be made to make sense.
+    # TODO: Apparently there is a rule that you always have to invoice for 4 hours or more on ad-shoots. Investigate.
     
-    input("Was this a weekend? [y/n]: ")
+    weekend = "y" in input("Was this a weekend? [y/n]: ").lower()
     
     if hours_worked > 8:
         print("Overtime detected.")
-        input("Was this overtime warned about before 12 o'clock the day before? [y/n]: ")
+        warned_overtime = "y" in input("Was this overtime warned about before 12 o'clock the day before? [y/n]: ").lower()
 
-print("\nDifference:",difference)
-print("Hours worked:",hours_worked)
+print("\nDifference:", difference)
+print("Hours worked:", hours_worked)
