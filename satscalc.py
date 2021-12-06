@@ -1,27 +1,13 @@
 #!usr/bin/env python3
 import datetime
 
-# NOTE: Maybe the whole thing should be re-thought to actually prompt for date.
-# That way you can easily fill in a calendar of sorts, which is much easier to loop through and calculate what hours were overtime etc.
-# This can probably be done with some smarts, which assume that if you start at 08:00, 07:00 doesn't mean the same day.
-# Meaning you only need to prompt for the date of the call time, not the date of the wrap time.
-# This will also automatically let you know if it was a weekend and stuff like that.
-
-# TODO: Prompt user for base rate, call time, wrap time, whether overtime was warned, and if it was a weekend.
-# This should be enough to calculate the pay for a single day's work.
-
-# These accumulate gradually as you enter hours
-normal_hours =  0.0
-ot1_hours =  0.0
-ot2_hours =  0.0
-ot3_hours =  0.0
-
-baserate = int(input("What's your base dayrate (sats)? "))
-hourly_rate = baserate/7.5
-
-print("Hourly rate:", str(hourly_rate))
-
-print("\nTime to add your hours of work.")
+class workday:
+    def __init__(self, calltime, wraptime, ot_warned=True, warned_until=wraptime):
+        self.call = calltime
+        self.wrap = wraptime
+        self.otw = ot_warned
+        self.ott = warned_until
+    
 
 def timeInput(prompt, fulldate=False):
     
@@ -49,6 +35,13 @@ def timeInput(prompt, fulldate=False):
 def floatify(hour, minutes):
     # Turns hour and minute into a single float that is easier to do math with
     return float(hour+(minutes/60.0))
+
+baserate = int(input("What's your base dayrate (sats)? "))
+hourly_rate = baserate/7.5
+
+print("Hourly rate:", str(hourly_rate))
+
+print("\nTime to add your hours of work.")
 
 # --- Data gathering loop ---
 
