@@ -1,5 +1,21 @@
 #!usr/bin/env python3
 
+# satscalc.py - script to help with billing for Norwegian film workers
+# Copyright (C) 2021 Sander Skjegstad
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see https://www.gnu.org/licenses/
+
 import datetime
 
 def timeInput(prompt, fulldate=False):
@@ -68,6 +84,10 @@ def floatify(hour, minutes):
 
 
 if __name__ == "__main__":
+    
+    print("This program comes with ABSOLUTELY NO WARRANTY.")
+    print("This is free software, and you are welcome to redistribute it")
+    print("under the conditions of the GPLv3 or later.")
     
     baserate = int(input("What's your base dayrate (sats)? "))
     hourly_rate = baserate/7.5
