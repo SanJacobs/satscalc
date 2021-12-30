@@ -175,11 +175,10 @@ if __name__ == "__main__":
             overtime = worktime-8
             ot_factor = calc_overtime_factor(overtime, each_day["otw"])
             each_day["price"] = round(baserate + (hourly_rate*ot_factor), 2)
-        elif 4 < worktime < 8:
+        elif 4 <= worktime < 8:
             each_day["category"] = "Short day"
-            overtime = worktime-8
             each_day["price"] = round(hourly_rate*worktime, 2)
-        elif worktime <= 4:
+        elif worktime < 4:
             each_day["category"] = "4-hour limit"
             each_day["price"] = round(hourly_rate*4, 2)
         else:
@@ -192,10 +191,10 @@ if __name__ == "__main__":
     
     total = 0
     
-    print("Receipt")
-    print("-----\n")
-    print("\n\nCalculation via satscalc by SanJacobs.")
-    print("Please note point 15 (Disclaimer of Warranty) of the GPLv3.")
+    print("\n\n\nReceipt")
+    print("-----")
+    print("\nCalculation via satscalc by SanJacobs.")
+    print("Please note point 15 of the GPLv3. (Disclaimer of Warranty)")
     for day_index, each_day in enumerate(workdays):
         print("\n---")
         print(f"Day #{day_index+1}: {each_day['call'].date()} - {each_day['category']}\n")
