@@ -87,7 +87,7 @@ if __name__ == "__main__":
     
     print("This program comes with ABSOLUTELY NO WARRANTY.")
     print("This is free software, and you are welcome to redistribute it")
-    print("under the conditions of the GPLv3 or later.")
+    print("under the conditions of the GPL, v3 or later.\n")
     
     baserate = int(input("What's your base dayrate (sats)? "))
     hourly_rate = baserate/7.5
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     
     social_costs = not "n" in input("Add 26% social costs? [y/n] ").lower()
 
-    print("\nTime to add your hours of work.")
+    print("\nTime to add your hours of work.\n")
 
 # --- Data gathering loop ---
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
                 "call": calltime,
                 "wrap": wraptime,
                 "otw": warned_overtime,
-                "ot": overtime,
+                "ot": overtime_hours,
                 }) 
         else:
             workdays.append({
@@ -149,13 +149,12 @@ if __name__ == "__main__":
     # --- Price calculation ---
 
     # NOTE:
-    # First two hours of warned overtime are 50%, unwarned is 100%
-    # Any work after 20:00 is overtime
-    # There is a rule that you always have to invoice for 4 hours or more pr day on ad-shoots. Take this into account.
+    # First hour of warned overtime are 50%, unwarned is 100%
+    # Any work between 22:00 and 06:00 gets at least a 100% bonus
     # If you get warned about some overtime, but they go beyond that, anything beyond that should be treated as thouogh it was unwarned.
-    # This means I'll have to ask for the specific time things were supposed to be done.
+    # This means I'll eventually have to implement asking for the specific time things were supposed to be done.
     
-    # TODO: Doesn't take weekends into account yet
+    # TODO: Take weekends into account.
 
     for day_index, each_day in enumerate(workdays):
         
@@ -170,19 +169,19 @@ if __name__ == "__main__":
         
         if worktime == 8:
             each_day["category"] = "Normal day"
-            each_day["price"] = baserate
+            each_day["price"] = round(baserate, 2)
         elif worktime > 8:
             each_day["category"] = "Overtime"
             overtime = worktime-8
             ot_factor = calc_overtime_factor(overtime, each_day["otw"])
-            each_day["price"] = baserate + (hourly_rate*ot_factor)
+            each_day["price"] = round(baserate + (hourly_rate*ot_factor), 2)
         elif 4 < worktime < 8:
             each_day["category"] = "Short day"
             overtime = worktime-8
-            each_day["price"] = hourly_rate*worktime
+            each_day["price"] = round(hourly_rate*worktime, 2)
         elif worktime <= 4:
-            each_day["category"] = "Sub 4-hour day"
-            each_day["price"] = hourly_rate*4
+            each_day["category"] = "4-hour limit"
+            each_day["price"] = round(hourly_rate*4, 2)
         else:
             print("This shouldn't be possible, something is very wrong.")
             quit()
@@ -193,19 +192,25 @@ if __name__ == "__main__":
     
     total = 0
     
+    print("Receipt")
+    print("-----\n")
     print("\n\nCalculation via satscalc by SanJacobs.")
     print("Please note point 15 (Disclaimer of Warranty) of the GPLv3.")
     for day_index, each_day in enumerate(workdays):
         print("\n---")
         print(f"Day #{day_index+1}: {each_day['call'].date()} - {each_day['category']}\n")
         
-        print("Calltime: " + str(each_day["call"].time()))
-        print("Finished at: " + str(each_day["wrap"].time()))
+        print("Calltime:", str(each_day["call"].time()))
+        print("Finished:", str(each_day["wrap"].time()))
         if "ot" in each_day:
-            print("Overtime: " + each_day["ot"] + " hour(s)")
-            print("Warned? " + each_day["otw"])
-        print("Price: " + each_day["price"])
+            print("Overtime:", each_day["ot"], "hour(s)")
+            print("Warned?", "Yes" if each_day["otw"] else "No")
+        print("Price:", each_day["price"])
         total += each_day["price"]
     
     print("\n\n-----")
-    print("TOTAL:", total)
+    if social_costs:
+        print("Sum:", total)
+        print("TOTAL:", round(total*1.26, 2))
+    else:
+        print("SUM AND TOTAL:", round(total, 2))
