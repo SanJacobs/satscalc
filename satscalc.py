@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see https://www.gnu.org/licenses/
 
+# NOTE: This Timesplitters branch is me trying out a completely new method calculating the cost of each day
+# No idea if it will work, yet, but that's what we're doing this for.
+
+# Another NOTE for my future self: Remember to check out the "holidays" library.
+
 import datetime
 
 def timeInput(prompt, fulldate=False):
@@ -43,41 +48,19 @@ def timeInput(prompt, fulldate=False):
 
 
 def hours_between(time1, time2):
-    """Returns the difference beween two times."""
+    """Returns the difference beween two times in hours."""
     if time2 > time1:
         return (time2 - time1).total_seconds()/3600
     return (time1 - time2).total_seconds()/3600
 
 
-def calc_overtime_factor(hours, warned):
-    """Loops through and sums together hour-pay-factor for every hour of overtime"""
-    output = 0
-    hours_passed = 1
-    
-    if warned:
-        time_and_half_length = 3
-    else:
-        time_and_half_length = 1
-    
-    while hours > 0:
-        if hours_passed <= time_and_half_length:
-            # 50% extra for the first 3 hours of warned overtime, first 1 hour of unwarned.
-            output += 1.5 * min(1, hours)
-        elif hours_passed <= 7:
-            # 100% extra for all overtime beyond 3 hours.
-            output += 2 * min(1, hours)
-        else:
-            # 200% extra for all overtime beyond 7 hours.
-            # FIXME: The actual rule is 200% extra for anything beyond a 14-hour day, but since there is no support for pre-call work yet, this is fine. For now.
-            output += 3 * min(1, hours)
-        hours -= 1
-        hours_passed += 1
-    
-    return output
+def calc_price_of_day():
+    """Takes all the info needed about a day, and outputs how much that day ought to cost"""
+    pass
 
 
 def floatify(hour, minutes):
-    # Turns hour and minute into a single float that is easier to do math with
+    """Turns hour and minute into a single float that is easier to do math with"""
     return float(hour+(minutes/60.0))
 
 
@@ -88,6 +71,8 @@ if __name__ == "__main__":
     print("This program comes with ABSOLUTELY NO WARRANTY.")
     print("This is free software, and you are welcome to redistribute it")
     print("under the conditions of the GPL, v3 or later.\n")
+    
+    user_ins = {}
     
     baserate = int(input("What's your base dayrate (sats)? "))
     hourly_rate = baserate/7.5
@@ -127,11 +112,19 @@ if __name__ == "__main__":
         if overtime:
             overtime_hours = hours_worked-8
             print("Overtime detected.")
-            warned_overtime = "y" in input("Was this overtime warned about before 12 o'clock the day before? [y/n]: ").lower()
-            if warned_overtime:
-                if "n" in input("Was it warned of entirely? [y/n] ").lower():
-                    #overtime_warned_until = timeInput("Until what time was it warned?")
-                    print("Feature not yet implemented.")
+            user_ins["warned_overtime"] = input("Was this overtime fully or parially warned about before 12 o'clock the day before? [f/p/n]: ").lower()
+            if "y" in user_ins["warned_overtime"]:
+                warned_overtime = True
+            elif "p" in user_ins["warned_overtime"]:
+                while True:
+                    planned_wrap = timeInput("When were you supposed to be done?")
+                    # FIXME: These +8 hours comparisons will probably cause a bug when the workday crosses midnighes midnight
+                    if planned_wrap < wraptime and planned_wrap > calltime+datetime.timedelta(hours=8):
+                        break
+                    elif planned_wrap <= calltime+datetime.timedelta(hours=8):
+                        print("That's not overtime.")
+                    print("")
+                
             workdays.append({
                 "call": calltime,
                 "wrap": wraptime,
@@ -152,7 +145,6 @@ if __name__ == "__main__":
     # First hour of warned overtime are 50%, unwarned is 100%
     # Any work between 22:00 and 06:00 gets at least a 100% bonus
     # If you get warned about some overtime, but they go beyond that, anything beyond that should be treated as thouogh it was unwarned.
-    # This means I'll eventually have to implement asking for the specific time things were supposed to be done.
     
     # TODO: Take weekends into account.
 
