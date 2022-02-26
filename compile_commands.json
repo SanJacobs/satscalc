@@ -1,0 +1,15 @@
+[
+    {
+        "arguments": [
+            "g++",
+            "-c",
+            "-I",
+            "/usr/include/boost/",
+            "-o",
+            "obj/main.o",
+            "src/main.cpp"
+        ],
+        "directory": "/home/talos/Programming/satscalc",
+        "file": "src/main.cpp"
+    }
+]
