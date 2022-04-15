@@ -29,3 +29,5 @@ int days_in(int month, int year);
 
 std::string timeprint(moment input_moment);
 
+std::string timeprint(timeblock input_timeblock);
+

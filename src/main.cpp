@@ -42,7 +42,7 @@ int main()
 	std::cout << "Wraptime: " << timeprint(wraptime) << std::endl;
 	
 	std::cout << "\nWorkday:\n";
-	std::cout << timeprint(workday.start) << " --> " << timeprint(workday.end) << std::endl;
+	std::cout << timeprint(workday) << std::endl;
 	
 	std::cout << "\nSplitting workday into workday and second_half...\n";
 	moment splitpoint{0, 12, 27, 11, 2010};
@@ -50,9 +50,9 @@ int main()
 	
 	std::cout << "\nSplitpoint: " << timeprint(splitpoint) << std::endl;
 	std::cout << "\nWorkday:\n";
-	std::cout << timeprint(workday.start) << " --> " << timeprint(workday.end) << std::endl;
+	std::cout << timeprint(workday) << std::endl;
 	std::cout << "\nSecond_half:\n";
-	std::cout << timeprint(second_half.start) << " --> " << timeprint(second_half.end) << std::endl;
+	std::cout << timeprint(second_half) << std::endl;
 	
 	std::cout << "\n\n --- TIME MATH TEST ---\n\n";
 	

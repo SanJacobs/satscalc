@@ -75,6 +75,11 @@ std::string timeprint(moment input_moment) {
 	return output;
 }
 
+std::string timeprint(timeblock input_timeblock) {
+	std::string output{timeprint(input_timeblock.start) + " --> " + timeprint(input_timeblock.end)};
+	return output;
+}
+
 int days_in(int month, int year) {
 	// Kind of a stupid and slow way to do this
 	// But it's nice to have it as a function
