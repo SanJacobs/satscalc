@@ -3,6 +3,7 @@
 #include <sstream>
 #include <ios>
 #include <iomanip>
+#include <string.h>
 
 struct moment{
 	signed int minutes;
@@ -30,9 +31,12 @@ timeblock timesplit(timeblock &input_block, const moment splitpoint);
 
 void wind(moment &input_moment, const int minutes, const int hours, const int days);
 
-int days_in(int month, int year);
+int days_in(const int month, const int year);
 
-std::string timeprint(moment input_moment);
+std::string timeprint(const moment input_moment);
 
-std::string timeprint(timeblock input_timeblock);
+std::string timeprint(const timeblock input_timeblock);
+
+moment timeinput(const int or_year, const int or_month, const int or_day);
+moment timeinput();
 

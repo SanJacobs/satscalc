@@ -3,7 +3,10 @@
 // Look. listen here. There's no way I'm going to start taking DST into account.
 // I have to draw the line somewhere, and frankly, once you start doing "Change an hour on the 4th moon of the 2nd week of March in France, but only if the tulips haven't sprung... etc... etc.." I'm out.
 
-// Operator overloads:
+//
+// --- OPERATOR OVERLOADS ---
+//
+
 bool moment::operator<(const moment& other) const{
 	// Converts moments to strings and casts them as ints to compare
 	using namespace std;
@@ -48,6 +51,11 @@ bool moment::operator=(const moment& other) const {
 			hours==other.hours &&
 			minutes==other.minutes);
 }
+
+
+//
+// --- FUNCTIONS ---
+//
 
 std::string padint(const int input, const int minimum_signs) {
 	std::ostringstream output;
@@ -169,4 +177,39 @@ int days_in(int month, int year) {
 	}
 	std::cout << "Something just went very wrong. You found month #" << std::to_string(month) << '\n';
 	return 5;
+}
+
+// TODO: Add checks for correct formatting, and ask for new input if wrong
+moment timeinput(int or_year, int or_month, int or_day) {
+	char input_string[5];
+	std::cout << "Input time\nHHMM (24-hour format, no space)\n";
+	std::cin >> input_string;
+	moment output{std::stoi(std::string(std::string(1, input_string[2])+input_string[3])),
+			std::stoi(std::string(std::string(1, input_string[0])+input_string[1])),
+			or_day, or_month, or_year};
+			// This is retarded
+	return output;
+}
+moment timeinput() {
+	char input_string[17];
+	std::cout << "Input date and time\nYEAR MM DD hh mm (24-hour format, use spaces)\n";
+	std::cin.getline(input_string, 17);
+	
+	// This uglyness is just how you use strtok() to split a string, apparently
+	const char* p;
+	int split_input[5];
+	int i{0};
+	p = strtok(input_string, " ");
+	while (p != NULL) {
+		split_input[i] = int(atoi(p));
+		i++;
+		p = strtok(NULL, " ");
+	}
+	
+	moment output{split_input[4],
+		split_input[3],
+		split_input[2],
+		split_input[1],
+		split_input[0]};
+	return output;
 }

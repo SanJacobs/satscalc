@@ -58,6 +58,7 @@ int main(int argc, char* argv[])
 			moment erronious_splitpoint{0, 10, 27, 11, 2010};
 			std::cout << timeprint(timesplit(second_half, erronious_splitpoint));
 
+			
 			std::cout << "\n\n --- TIME MATH TEST ---\n\n";
 
 			moment testtime{30, 8, 25, 2, 2012};
@@ -89,8 +90,22 @@ int main(int argc, char* argv[])
 			std::cout << "\nRewinding 10 days...\n";
 			wind(testtime, 0, 0, -10);
 			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+			
+			
+			std::cout << "\n\n --- TIME INPUT TEST ---\n\n";
+			
+			moment inputmoment = timeinput();
+			std::cout << "Time reveived: " << timeprint(inputmoment) << std::endl;
+			moment inputmoment2 = timeinput(2012, 11, 26);
+			std::cout << "Time reveived: " << timeprint(inputmoment2) << std::endl;
 		}
 	}
+	std::cout << "satscalc (C++ Edition)\n";
+	std::cout << "Copyright 2022 Sander J. Skjegstad.\n";
+	std::cout << "This is free software with ABSOLUTELY NO WARRENTY.\n";
+	std::cout << "It does NOT give financial advice.\n\n";
+	
+	std::cout << "-----\nStep 1: Adding the days\n\n";
 	
 	return 0;
 }
