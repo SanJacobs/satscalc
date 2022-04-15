@@ -22,69 +22,75 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
 // TODO: Make the system that determines the price of each of those slices of time
 
-// TODO: Test the boost time date system, see if it accounts for leap years and DST.
-
 #include <iostream>
 #include "time.h"
 //#include <boost/date_time/time_duration.hpp>
 //#include <boost/date_time/posix_time/posix_time.hpp>
 
-int main()
+int main(int argc, char* argv[])
 {
-	//using boost::posix_time::to_simple_string;
-	//tm test_moment_one{0, 30, 14, 27, 11, 2010};
-	moment calltime{30, 8, 27, 11, 2010};
-	moment wraptime{30, 16, 27, 11, 2010};
-	timeblock workday{calltime, wraptime};
-	
-	std::cout << "\n\n --- TIME UNITS TEST ---\n\n";
-	std::cout << "Calltime: " << timeprint(calltime) << std::endl;
-	std::cout << "Wraptime: " << timeprint(wraptime) << std::endl;
-	
-	std::cout << "\nWorkday:\n";
-	std::cout << timeprint(workday) << std::endl;
-	
-	std::cout << "\nSplitting workday into workday and second_half...\n";
-	moment splitpoint{0, 12, 27, 11, 2010};
-	timeblock second_half{timesplit(workday, splitpoint)};
-	
-	std::cout << "\nSplitpoint: " << timeprint(splitpoint) << std::endl;
-	std::cout << "\nWorkday:\n";
-	std::cout << timeprint(workday) << std::endl;
-	std::cout << "\nSecond_half:\n";
-	std::cout << timeprint(second_half) << std::endl;
-	
-	std::cout << "\n\n --- TIME MATH TEST ---\n\n";
-	
-	moment testtime{30, 8, 25, 2, 2012};
-	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
-	
-	
-	std::cout << "\nForwarding 45 minutes...\n";
-	wind(testtime, 45, 0, 0);
-	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
-	
-	std::cout << "\nRewinding 45 minutes...\n";
-	wind(testtime, -45, 0, 0);
-	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
-	
-	
-	std::cout << "\nForwarding 20 hours...\n";
-	wind(testtime, 0, 20, 0);
-	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
-	
-	std::cout << "\nRewinding 20 hours...\n";
-	wind(testtime, 0, -20, 0);
-	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
-	
-	
-	std::cout << "\nForwarding 10 days...\n";
-	wind(testtime, 0, 0, 10);
-	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
-	
-	std::cout << "\nRewinding 10 days...\n";
-	wind(testtime, 0, 0, -10);
-	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+	if(argc > 1){
+		if(std::string(argv[1])=="test") {
+			//using boost::posix_time::to_simple_string;
+			//tm test_moment_one{0, 30, 14, 27, 11, 2010};
+			moment calltime{30, 8, 27, 11, 2010};
+			moment wraptime{30, 16, 27, 11, 2010};
+			timeblock workday{calltime, wraptime};
+
+			std::cout << "\n\n --- TIME UNITS TEST ---\n\n";
+			std::cout << "Calltime: " << timeprint(calltime) << std::endl;
+			std::cout << "Wraptime: " << timeprint(wraptime) << std::endl;
+
+			std::cout << "\nWorkday:\n";
+			std::cout << timeprint(workday) << std::endl;
+
+			std::cout << "\nSplitting workday into workday and second_half...\n";
+			moment splitpoint{0, 12, 27, 11, 2010};
+			timeblock second_half{timesplit(workday, splitpoint)};
+
+			std::cout << "\nSplitpoint: " << timeprint(splitpoint) << std::endl;
+			std::cout << "\nWorkday:\n";
+			std::cout << timeprint(workday) << std::endl;
+			std::cout << "\nSecond_half:\n";
+			std::cout << timeprint(second_half) << std::endl;
+
+			std::cout << "\nSplitting second_half at erronious point...\n";
+			moment erronious_splitpoint{0, 10, 27, 11, 2010};
+			std::cout << timeprint(timesplit(second_half, erronious_splitpoint));
+
+			std::cout << "\n\n --- TIME MATH TEST ---\n\n";
+
+			moment testtime{30, 8, 25, 2, 2012};
+			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+
+			std::cout << "\nForwarding 45 minutes...\n";
+			wind(testtime, 45, 0, 0);
+			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+			std::cout << "\nRewinding 45 minutes...\n";
+			wind(testtime, -45, 0, 0);
+			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+
+			std::cout << "\nForwarding 20 hours...\n";
+			wind(testtime, 0, 20, 0);
+			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+			std::cout << "\nRewinding 20 hours...\n";
+			wind(testtime, 0, -20, 0);
+			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+
+			std::cout << "\nForwarding 10 days...\n";
+			wind(testtime, 0, 0, 10);
+			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+			std::cout << "\nRewinding 10 days...\n";
+			wind(testtime, 0, 0, -10);
+			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+		}
+	}
 	
 	return 0;
 }
