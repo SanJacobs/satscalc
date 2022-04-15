@@ -5,6 +5,10 @@
 // Just do it on a set day, God dammit.
 
 timeblock timesplit(timeblock &input_block, moment splitpoint) {
+	// Splits a timeblock at splitpoint.
+	// It changes the input_block to end at splitpoint, and returns a new timeblock
+	// that lasts from splitpoint to where the input_block used to end.
+	// TODO: Throw error if splitpoint is outside timeblock.
 	timeblock output{splitpoint, input_block.end};
 	input_block.end = splitpoint;
 	return output;
@@ -35,18 +39,26 @@ void wind(moment &input_moment, int minutes, int hours, int days) {
 	}
 	
 	// Adding days
+	// XXX: This will cause trouble if you wind time by more than a month's length in days.
+	// So, let's just not do that... heh...
 	input_moment.day += days;
-	// FIXME: Months don't roll over.'The -3th of January will cause problems.
-	//											  ^^^^^^^
-	// Fixing this will just take some simple modulo math.
 	int current_month_length = days_in(input_moment.month, input_moment.year);
 	while(input_moment.day > current_month_length) {
 		input_moment.day -= current_month_length;
 		input_moment.month++;
+		if(input_moment.month > 12) {
+			input_moment.month -= 12;
+			input_moment.year++;
+		}
 		current_month_length = days_in(input_moment.month, input_moment.year);
+	}
 	while(input_moment.day < 1) {
-		input_moment.day += days_in(((input_moment.month-1)%12)+1); // FIXME, this is absolutely retarded at the moment
-		input_moment.month++;
+		input_moment.month--;
+		input_moment.day += days_in(input_moment.month, input_moment.year);
+		if(input_moment.month < 1) {
+			input_moment.month += 12;
+			input_moment.year--;
+		}
 		current_month_length = days_in(input_moment.month, input_moment.year);
 	}
 }
