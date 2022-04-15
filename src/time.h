@@ -19,6 +19,9 @@ class day{
 };
 
 timeblock timesplit(timeblock &input_block, moment splitpoint);
+	// Splits a timeblock at splitpoint.
+	// It changes the input_block to end at splitpoint, and returns a new timeblock
+	// that lasts from splitpoint to where the input_block used to end.
 
 void wind(moment &input_moment, int minutes, int hours, int days);
 
