@@ -37,7 +37,7 @@ int main()
 	moment wraptime{30, 16, 27, 11, 2010};
 	timeblock workday{calltime, wraptime};
 	
-	std::cout << " --- TEST ---\n\n";
+	std::cout << "\n\n --- TIME UNITS TEST ---\n\n";
 	std::cout << "Calltime: " << timeprint(calltime) << std::endl;
 	std::cout << "Wraptime: " << timeprint(wraptime) << std::endl;
 	
@@ -53,6 +53,38 @@ int main()
 	std::cout << timeprint(workday.start) << " --> " << timeprint(workday.end) << std::endl;
 	std::cout << "\nSecond_half:\n";
 	std::cout << timeprint(second_half.start) << " --> " << timeprint(second_half.end) << std::endl;
+	
+	std::cout << "\n\n --- TIME MATH TEST ---\n\n";
+	
+	moment testtime{30, 8, 25, 2, 2012};
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+	
+	
+	std::cout << "\nForwarding 45 minutes...\n";
+	wind(testtime, 45, 0, 0);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+	
+	std::cout << "\nRewinding 45 minutes...\n";
+	wind(testtime, -45, 0, 0);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+	
+	
+	std::cout << "\nForwarding 20 hours...\n";
+	wind(testtime, 0, 20, 0);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+	
+	std::cout << "\nRewinding 20 hours...\n";
+	wind(testtime, 0, -20, 0);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+	
+	
+	std::cout << "\nForwarding 10 days...\n";
+	wind(testtime, 0, 0, 10);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+	
+	std::cout << "\nRewinding 10 days...\n";
+	wind(testtime, 0, 0, -10);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
 	
 	return 0;
 }
