@@ -37,9 +37,23 @@ int main()
 	moment wraptime{30, 16, 27, 11, 2010};
 	timeblock workday{calltime, wraptime};
 	
+	std::cout << " --- TEST ---\n\n";
+	std::cout << "Calltime: " << timeprint(calltime) << std::endl;
+	std::cout << "Wraptime: " << timeprint(wraptime) << std::endl;
 	
-	std::cout << "Testing 123\n";
-	std::cout << timeprint(workday.start) << std::endl;
+	std::cout << "\nWorkday:\n";
+	std::cout << timeprint(workday.start) << " --> " << timeprint(workday.end) << std::endl;
+	
+	std::cout << "\nSplitting workday into workday and second_half...\n";
+	moment splitpoint{0, 12, 27, 11, 2010};
+	timeblock second_half{timesplit(workday, splitpoint)};
+	
+	std::cout << "\nSplitpoint: " << timeprint(splitpoint) << std::endl;
+	std::cout << "\nWorkday:\n";
+	std::cout << timeprint(workday.start) << " --> " << timeprint(workday.end) << std::endl;
+	std::cout << "\nSecond_half:\n";
+	std::cout << timeprint(second_half.start) << " --> " << timeprint(second_half.end) << std::endl;
+	
 	return 0;
 }
 
