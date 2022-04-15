@@ -54,12 +54,12 @@ void wind(moment &input_moment, int minutes, int hours, int days) {
 	}
 	while(input_moment.day < 1) {
 		input_moment.month--;
-		input_moment.day += days_in(input_moment.month, input_moment.year);
 		if(input_moment.month < 1) {
 			input_moment.month += 12;
 			input_moment.year--;
 		}
 		current_month_length = days_in(input_moment.month, input_moment.year);
+		input_moment.day += current_month_length;
 	}
 }
 
