@@ -7,44 +7,23 @@
 // --- OPERATOR OVERLOADS ---
 //
 
+long sortable_time(const moment input_moment) {
+		return stol(std::to_string(input_moment.year)+
+		padint(input_moment.month,2)+
+		padint(input_moment.day,2)+
+		padint(input_moment.hours,2)+
+		padint(input_moment.minutes,2));
+}
+
 bool moment::operator<(const moment& other) const{
-	// Converts moments to strings and casts them as ints to compare
-	using namespace std;
-	string left_moment_string{
-			to_string(year)+
-			padint(month,2)+
-			padint(day,2)+
-			padint(hours,2)+
-			padint(minutes,2)};
-	string right_moment_string{
-			to_string(other.year)+
-			padint(other.month,2)+
-			padint(other.day,2)+
-			padint(other.hours,2)+
-			padint(other.minutes,2)};
-	long left_int = stol(left_moment_string);
-	long right_int = stol(right_moment_string);
-	return bool(left_int < right_int);
+	return bool(sortable_time(*this) < sortable_time(other));
 }
+
 bool moment::operator>(const moment& other) const{
-	using namespace std;
-	string left_moment_string{
-			to_string(year)+
-			padint(month,2)+
-			padint(day,2)+
-			padint(hours,2)+
-			padint(minutes,2)};
-	string right_moment_string{
-			to_string(other.year)+
-			padint(other.month,2)+
-			padint(other.day,2)+
-			padint(other.hours,2)+
-			padint(other.minutes,2)};
-	long left_int = stol(left_moment_string);
-	long right_int = stol(right_moment_string);
-	return bool(left_int > right_int);
+	return bool(sortable_time(*this) > sortable_time(other));
 }
-bool moment::operator=(const moment& other) const {
+
+bool moment::operator==(const moment& other) const {
 	return bool(year==other.year &&
 			month==other.month &&
 			day==other.day &&
@@ -63,7 +42,7 @@ std::string padint(const int input, const int minimum_signs) {
 	return output.str();
 }
 
-timeblock timesplit(timeblock &input_block, const moment splitpoint) {
+timeblock timesplit(timeblock& input_block, const moment splitpoint) {
 	// Splits a timeblock at splitpoint.
 	// It changes the input_block to end at splitpoint, and returns a new timeblock
 	// that lasts from splitpoint to where the input_block used to end.
@@ -77,7 +56,7 @@ timeblock timesplit(timeblock &input_block, const moment splitpoint) {
 	return output;
 }
 
-void wind(moment &input_moment, const int minutes, const int hours, const int days) {
+void wind(moment& input_moment, const int minutes, const int hours, const int days) {
 	
 	// Adding minutes
 	input_moment.minutes += minutes;
@@ -141,6 +120,7 @@ std::string timeprint(timeblock input_timeblock) {
 	std::string output{timeprint(input_timeblock.start) + " --> " + timeprint(input_timeblock.end)};
 	return output;
 }
+
 
 int days_in(int month, int year) {
 	// Kind of a stupid and slow way to do this
