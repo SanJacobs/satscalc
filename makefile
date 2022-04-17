@@ -19,7 +19,7 @@ a.out: $(OBJECTS)
 	g++ $(LIBDIR) $(LIBS) $(OBJECTS)
 
 $(OBJECTS): obj/%.o : src/%.cpp
-	g++ $(INCLUDE) -c $< -o $@
+	g++ -g $(INCLUDE) -c $< -o $@
 
 clean:
 	rm obj/*.o
