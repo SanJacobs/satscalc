@@ -99,14 +99,15 @@ int main(int argc, char* argv[])
 			moment inputmoment2 = timeinput(2012, 11, 26);
 			std::cout << "Time reveived: " << timeprint(inputmoment2) << std::endl;
 		}
+	} else {
+		std::cout << "satscalc (C++ Edition)\n";
+		std::cout << "Copyright 2022 Sander J. Skjegstad.\n";
+		std::cout << "This is free software with ABSOLUTELY NO WARRENTY.\n";
+		std::cout << "It does NOT give financial advice.\n\n";
+		
+		std::cout << "-----\nStep 1: Adding the days\n\n";
+		
+		return 0;
 	}
-	std::cout << "satscalc (C++ Edition)\n";
-	std::cout << "Copyright 2022 Sander J. Skjegstad.\n";
-	std::cout << "This is free software with ABSOLUTELY NO WARRENTY.\n";
-	std::cout << "It does NOT give financial advice.\n\n";
-	
-	std::cout << "-----\nStep 1: Adding the days\n\n";
-	
-	return 0;
 }
 
