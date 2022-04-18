@@ -6,6 +6,12 @@
 #include <string.h>
 #include <vector>
 
+struct delta{
+	signed int minutes;
+	signed int hours;
+	signed int days;
+};
+
 struct moment{
 	signed int minutes;
 	signed int hours; // 24-hour format. 23:59 progresses to 00:00
@@ -16,11 +22,14 @@ struct moment{
 	bool operator<(const moment& other) const;
 	bool operator>(const moment& other) const;
 	bool operator==(const moment& other) const;
+	bool operator!=(const moment& other) const;
+	delta operator-(const moment& other) const;
 };
 
 struct timeblock{
 	moment start;
 	moment end;
+	double hourcount();
 };
 
 struct workday{

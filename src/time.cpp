@@ -2,6 +2,8 @@
 
 // Look. listen here. There's no way I'm going to start taking DST into account.
 // I have to draw the line somewhere, and frankly, once you start doing "Change an hour on the 4th moon of the 2nd week of March in France, but only if the tulips haven't sprung... etc... etc.." I'm out.
+// The fact that DST is designed this way, though, luckily makes it so you are unlikely to be on the clock during a DST transition.
+
 
 //
 // --- OPERATOR OVERLOADS ---
@@ -30,6 +32,61 @@ bool moment::operator==(const moment& other) const {
 			hours==other.hours &&
 			minutes==other.minutes);
 }
+
+bool moment::operator!=(const moment& other) const {
+	return bool(year!=other.year ||
+			month!=other.month ||
+			day!=other.day ||
+			hours!=other.hours ||
+			minutes!=other.minutes);
+}
+
+delta moment::operator-(const moment& other) const {
+	// Uses what I call an accumulator-decumulator design
+	// Count how long it takes to approach a benchmark,
+	// and that's the difference
+	// 
+	if(*this==other) return{0,0,0};
+	delta accumulator{0,0,0};
+	
+	// smallest operand becomes benchmark to approach
+	const bool reverse{*this<other};
+	const moment& benchmark = reverse? *this : other;
+	moment decumulator = reverse? other : *this;
+	
+	// It is possible to write something that does this in months at a time, instead of days,
+	// which would be faster, but I am not expecting to have to do this with such
+	// long periods of time, so screw that.
+	while(decumulator.year - benchmark.year > 1 ||
+			decumulator.month - benchmark.month > 1 ||
+			decumulator.day - benchmark.day > 1) {
+		wind(decumulator, 0, 0, 1);
+		accumulator.days++;
+	}
+	while(decumulator.hours - benchmark.hours > 1) {
+		wind(decumulator, 0, 1, 0);
+		accumulator.hours++;
+	}
+	while(decumulator != benchmark) {
+		wind(decumulator, 1, 0, 0);
+		accumulator.minutes++;
+	}
+	return accumulator;
+}
+
+
+
+//
+// --- METHODS ---
+//
+
+double timeblock::hourcount() {
+	delta timedelta = end-start;
+	return (timedelta.minutes/60.0f +
+			timedelta.hours +
+			timedelta.days*24);
+}
+
 
 
 //
