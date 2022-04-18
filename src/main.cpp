@@ -24,15 +24,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
 #include <iostream>
 #include "time.h"
-//#include <boost/date_time/time_duration.hpp>
-//#include <boost/date_time/posix_time/posix_time.hpp>
 
 int main(int argc, char* argv[])
 {
 	if(argc > 1){
 		if(std::string(argv[1])=="test") {
-			//using boost::posix_time::to_simple_string;
-			//tm test_moment_one{0, 30, 14, 27, 11, 2010};
 			moment calltime{30, 8, 27, 11, 2010};
 			moment wraptime{30, 16, 27, 11, 2010};
 			timeblock workday{calltime, wraptime};
