@@ -7,10 +7,11 @@
 #include <vector>
 
 struct delta{
-	signed int minutes;
-	signed int hours;
-	signed int days;
+	unsigned int minutes;
+	unsigned int hours;
+	unsigned int days;
 };
+std::ostream& operator<<(std::ostream& stream, const delta& other);
 
 struct moment{
 	signed int minutes;
@@ -39,16 +40,17 @@ struct workday{
 	timeblock blocks[12];
 	//
 	// 1.  sleepbreach
-	// 2.  Call
-	// 3.  Early morning
+	// 2.  call
+	// 3.  early morning
 	// 4.  start of day
 	// 5.  1st hr overtime
 	// 6.  post-1 hour overtime
-	// 7.  14-hour mark
-	// 8.  22:00
-	// 9.  midnight crossing
-	// 10. 06:00
-	// 11. wrap
+	// 7.  end of warned ot
+	// 8.  14-hour mark
+	// 9.  22:00
+	// 10. midnight crossing
+	// 11. 06:00
+	// 12. wrap
 	//
 	workday(moment calltime, moment wraptime, moment planned_wraptime) {
 		

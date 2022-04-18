@@ -60,20 +60,30 @@ delta moment::operator-(const moment& other) const {
 	while(decumulator.year - benchmark.year > 1 ||
 			decumulator.month - benchmark.month > 1 ||
 			decumulator.day - benchmark.day > 1) {
-		wind(decumulator, 0, 0, 1);
+		wind(decumulator, 0, 0, -1);
 		accumulator.days++;
 	}
 	while(decumulator.hours - benchmark.hours > 1) {
-		wind(decumulator, 0, 1, 0);
+		wind(decumulator, 0, -1, 0);
 		accumulator.hours++;
 	}
 	while(decumulator != benchmark) {
-		wind(decumulator, 1, 0, 0);
-		accumulator.minutes++;
+		wind(decumulator, -1, 0, 0);
+		accumulator.minutes = accumulator.minutes+1;
+	}
+	while(accumulator.minutes > 59) {
+		accumulator.minutes -= 60;
+		accumulator.hours++;
 	}
 	return accumulator;
 }
 
+std::ostream& operator<<(std::ostream& stream, const delta& other) {
+	if(other.days) stream << other.days << " days, ";
+	if(other.hours) stream << other.hours << " hours, ";
+	if(other.minutes) stream << other.minutes << " minutes.";
+	return stream;
+}
 
 
 //

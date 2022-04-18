@@ -40,6 +40,16 @@ int main(int argc, char* argv[])
 			std::cout << "\nWorkday:\n";
 			std::cout << timeprint(workday) << std::endl;
 
+			
+			std::cout << "\n\n --- TIME MATH TEST ---\n\n";
+			
+			std::cout << "Difference between calltime and wraptime:\n";
+			std::cout << (calltime-wraptime) << std::endl;
+			std::cout << "Other way around, should show same result:\n";
+			std::cout << (calltime-wraptime) << std::endl;
+			std::cout << "As method on workday:\n";
+			std::cout << (workday.hourcount()) << std::endl;
+
 			std::cout << "\nSplitting workday into workday and second_half...\n";
 			moment splitpoint{0, 12, 27, 11, 2010};
 			timeblock second_half{timesplit(workday, splitpoint)};
@@ -55,8 +65,6 @@ int main(int argc, char* argv[])
 			std::cout << timeprint(timesplit(second_half, erronious_splitpoint));
 
 			
-			std::cout << "\n\n --- TIME MATH TEST ---\n\n";
-
 			moment testtime{30, 8, 25, 2, 2012};
 			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
 
@@ -86,6 +94,7 @@ int main(int argc, char* argv[])
 			std::cout << "\nRewinding 10 days...\n";
 			wind(testtime, 0, 0, -10);
 			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+			
 			
 			
 			std::cout << "\n\n --- TIME INPUT TEST ---\n\n";
