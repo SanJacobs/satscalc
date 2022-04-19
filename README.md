@@ -1,3 +1,5 @@
+![satscalc logotype vector](https://user-images.githubusercontent.com/21090839/164118463-ca2ab578-3347-4764-bc74-dae629646a89.svg)
+
 # satscalc
 A calculator to help with invoicing for Norwegian film crew members.
 
