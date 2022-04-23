@@ -16,11 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
 */
 
-// TODO: Make a system that effeciently stores a range of time, and lets you split it up neatly
-// The slicing function could use a pointer to output the posterior half of the time range into
-// The slicing process should figure out how many slices will need to be made before doing the slices, so a correctly sized array can be allocated on the stack instead of using a vec on the heap
-
+// TODO: Write function/method/constructor that slices a workday up into the differently priced segments
 // TODO: Make the system that determines the price of each of those slices of time
+// TODO: Add ruleset selector (That only allows you to pick the advert ruleset at first)
+// TODO: Make cool logo
 
 #include <iostream>
 #include "time.h"
@@ -40,6 +39,7 @@ int main(int argc, char* argv[])
 			std::cout << "\nWorkday:\n";
 			std::cout << timeprint(workday) << std::endl;
 
+			
 			
 			std::cout << "\n\n --- TIME MATH TEST ---\n\n";
 			
@@ -62,8 +62,11 @@ int main(int argc, char* argv[])
 
 			std::cout << "\nSplitting second_half at erronious point...\n";
 			moment erronious_splitpoint{0, 10, 27, 11, 2010};
-			std::cout << timeprint(timesplit(second_half, erronious_splitpoint));
+			std::cout << timeprint(timesplit(second_half, erronious_splitpoint)) << "\n";
 
+			
+			
+			std::cout << "\n\n --- TIME WINDING TEST ---\n\n";
 			
 			moment testtime{30, 8, 25, 2, 2012};
 			std::cout << "Testtime: " << timeprint(testtime) << std::endl;
@@ -111,6 +114,11 @@ int main(int argc, char* argv[])
 		std::cout << "It does NOT give financial advice.\n\n";
 		
 		std::cout << "-----\nStep 1: Adding the days\n\n";
+		
+		bool not_done = true;
+		while(not_done) {
+			
+		}
 		
 		return 0;
 	}

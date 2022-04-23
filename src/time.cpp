@@ -2,7 +2,7 @@
 
 // Look. listen here. There's no way I'm going to start taking DST into account.
 // I have to draw the line somewhere, and frankly, once you start doing "Change an hour on the 4th moon of the 2nd week of March in France, but only if the tulips haven't sprung... etc... etc.." I'm out.
-// The fact that DST is designed this way, though, luckily makes it so you are unlikely to be on the clock during a DST transition.
+// The fact that DST is designed this way, though, makes it so you are unlikely to be on the clock during a DST transition.
 
 
 //
@@ -40,12 +40,22 @@ bool moment::operator!=(const moment& other) const {
 			hours!=other.hours ||
 			minutes!=other.minutes);
 }
+moment moment::operator+(const delta& other) const {
+	moment output{*this};
+	wind(output, other.minutes, other.hours, other.days);
+	return output;
+}
+moment moment::operator-(const delta& other) const {
+	moment output{*this};
+	wind(output, other.minutes*-1, other.hours*-1, other.days*-1);
+	return output;
+}
 
 delta moment::operator-(const moment& other) const {
 	// Uses what I call an accumulator-decumulator design
 	// Count how long it takes to approach a benchmark,
-	// and that's the difference
-	// 
+	// and that count is the difference
+	
 	if(*this==other) return{0,0,0};
 	delta accumulator{0,0,0};
 	
@@ -63,10 +73,16 @@ delta moment::operator-(const moment& other) const {
 		wind(decumulator, 0, 0, -1);
 		accumulator.days++;
 	}
+	
 	while(decumulator.hours - benchmark.hours > 1) {
 		wind(decumulator, 0, -1, 0);
 		accumulator.hours++;
 	}
+	while(accumulator.hours > 23) {
+		accumulator.hours -= 24;
+		accumulator.days++;
+	}
+	
 	while(decumulator != benchmark) {
 		wind(decumulator, -1, 0, 0);
 		accumulator.minutes = accumulator.minutes+1;
@@ -75,14 +91,58 @@ delta moment::operator-(const moment& other) const {
 		accumulator.minutes -= 60;
 		accumulator.hours++;
 	}
+	
 	return accumulator;
 }
 
 std::ostream& operator<<(std::ostream& stream, const delta& other) {
+	if(other.days==0 && other.hours==0 && other.minutes==0){
+		stream << "None.";
+		return stream;
+	}
 	if(other.days) stream << other.days << " days, ";
 	if(other.hours) stream << other.hours << " hours, ";
 	if(other.minutes) stream << other.minutes << " minutes.";
 	return stream;
+}
+
+
+//
+// --- CONSTRUCTORS ---
+//
+
+workday::workday(const moment& previous_wrap,
+					const moment& calltime,
+					const moment& wraptime,
+					const moment& planned_wraptime) {
+	call = calltime;
+	wrap = wraptime;
+	planned_wrap = planned_wraptime;
+	timeblock initial_block{call, wrap};
+	moment splitpoints[10]{ // --$-- Points where the price may change --$-- //
+		
+		previous_wrap+(delta){0, 10, 0}, // Sleepbreach, 10 hours after previous wrap
+		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5
+		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning
+		call+(delta){0, 8, 0}, // Normal 8 hours of work
+		call+(delta){0, 9, 0}, // 1st hour of overtime is over
+		planned_wraptime, // End of warned overtime
+		call+(delta){0, 14, 0}, // The 14-hour mark
+		(moment){0, 22, call.day, call.month, call.year}, // 22:00 in the evening
+		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 1, 0}, // Midnight
+		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 7, 0}, // 6, next morning
+		
+	};
+	
+	int j = 0;
+	for(int i = 0; i<=10; i++) {
+		const moment* each_moment = &splitpoints[i];
+		if(*each_moment > call && *each_moment < wrap) {
+			blocks[j++] = timesplit(initial_block, *each_moment);
+			// FIXME: The way timesplit will work is to be reversed, so this will act as expected.
+		}
+	}
+	
 }
 
 
@@ -97,6 +157,13 @@ double timeblock::hourcount() {
 			timedelta.days*24);
 }
 
+weekday moment::getweekday() {
+	// Based on implementation from NProg on StackOverflow. Thanks.
+	int y = year;
+    static int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+    y -= month < 3;
+    return static_cast<weekday>((y + y / 4 - y / 100 + y / 400 + t[month - 1] + day - 1) % 7);
+}
 
 
 //
@@ -110,10 +177,12 @@ std::string padint(const int input, const int minimum_signs) {
 }
 
 timeblock timesplit(timeblock& input_block, const moment splitpoint) {
+	// FIXME: Reverse the outputs. second_half replaces input_block, and return the first half.
 	// Splits a timeblock at splitpoint.
 	// It changes the input_block to end at splitpoint, and returns a new timeblock
 	// that lasts from splitpoint to where the input_block used to end.
 	if(splitpoint < input_block.start || splitpoint > input_block.end) {
+		// FIXME: This should use <= and >=, but they don't exist for moments... yet... ;)
 		std::cerr << "ERROR: Splitpoint outside of timeblock!\n";
 		std::cerr << "Timeblock: " << timeprint(input_block) << std::endl;
 		std::cerr << "Splitpoint: " << timeprint(splitpoint) << std::endl;
@@ -170,6 +239,9 @@ void wind(moment& input_moment, const int minutes, const int hours, const int da
 		current_month_length = days_in(input_moment.month, input_moment.year);
 		input_moment.day += current_month_length;
 	}
+}
+void wind(moment& input_moment, const delta& time_delta) {
+	wind(input_moment, time_delta.minutes, time_delta.hours, time_delta.days);
 }
 
 std::string timeprint(moment input_moment) {

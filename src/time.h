@@ -6,6 +6,16 @@
 #include <string.h>
 #include <vector>
 
+enum weekday{
+	monday,
+	tuesday,
+	wednesday,
+	thursday,
+	friday,
+	saturday,
+	sunday
+};
+
 struct delta{
 	unsigned int minutes;
 	unsigned int hours;
@@ -20,29 +30,34 @@ struct moment{
 	signed int month;
 	signed int year;
 	
+	weekday getweekday();
+	
 	bool operator<(const moment& other) const;
 	bool operator>(const moment& other) const;
 	bool operator==(const moment& other) const;
 	bool operator!=(const moment& other) const;
 	delta operator-(const moment& other) const;
+	moment operator+(const delta& other) const;
+	moment operator-(const delta& other) const;
 };
 
 struct timeblock{
 	moment start;
 	moment end;
 	double hourcount();
+	float valuefactor = 1;
 };
 
 struct workday{
 	moment call;
 	moment wrap;
 	moment planned_wrap;
-	timeblock blocks[12];
+	timeblock blocks[14];
 	//
-	// 1.  sleepbreach
-	// 2.  call
-	// 3.  early morning
-	// 4.  start of day
+	// 1.  call
+	// 2.  sleepbreach
+	// 3.  6:00
+	// 4.  started 2 hours before 7
 	// 5.  1st hr overtime
 	// 6.  post-1 hour overtime
 	// 7.  end of warned ot
@@ -52,22 +67,23 @@ struct workday{
 	// 11. 06:00
 	// 12. wrap
 	//
-	workday(moment calltime, moment wraptime, moment planned_wraptime) {
-		
-	}
-	workday(moment previous_wrap, moment calltime, moment wraptime, moment planned_wraptime) {
-		
-	}
+	workday(const moment& previous_wrap,
+				const moment& calltime,
+				const moment& wraptime,
+				const moment& planned_wraptime);
 };
 
 std::string padint(const int input, const int minimum_signs);
 
 timeblock timesplit(timeblock& input_block, const moment splitpoint);
+		// XXX: I have now found that it would be really nice if the first half is returned,
+		//		and the second half replaces the instance at input_block;
 	// Splits a timeblock at splitpoint.
 	// It changes the input_block to end at splitpoint, and returns a new timeblock
 	// that lasts from splitpoint to where the input_block used to end.
 
-void wind(moment &input_moment, const int minutes, const int hours, const int days);
+void wind(moment& input_moment, const int minutes, const int hours, const int days);
+void wind(moment& input_moment, const delta& time_delta);
 
 int days_in(const int month, const int year);
 
@@ -77,4 +93,5 @@ long sortable_time(const timeblock input_timeblock);
 
 moment timeinput(const int or_year, const int or_month, const int or_day);
 moment timeinput();
+// TODO: It would be nice to have a version that can take in a const reference to a moment, prompt for clock-time, and return the first moment at that clock-time forward in time from the input moment
 
