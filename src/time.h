@@ -34,6 +34,8 @@ struct moment{
 	
 	bool operator<(const moment& other) const;
 	bool operator>(const moment& other) const;
+	bool operator<=(const moment& other) const;
+	bool operator>=(const moment& other) const;
 	bool operator==(const moment& other) const;
 	bool operator!=(const moment& other) const;
 	delta operator-(const moment& other) const;

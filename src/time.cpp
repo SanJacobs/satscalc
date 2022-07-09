@@ -33,6 +33,14 @@ bool moment::operator==(const moment& other) const {
 			minutes==other.minutes);
 }
 
+bool moment::operator<=(const moment& other) const {
+	return bool((*this < other) || *this == other);
+}
+
+bool moment::operator>=(const moment& other) const {
+	return bool((*this > other) || *this == other);
+}
+
 bool moment::operator!=(const moment& other) const {
 	return bool(year!=other.year ||
 			month!=other.month ||
@@ -121,6 +129,11 @@ workday::workday(const moment& previous_wrap,
 	timeblock initial_block{call, wrap};
 	moment splitpoints[10]{ // --$-- Points where the price may change --$-- //
 		
+		// NOTE: Maybe this should also contain the valuefactor associated with the split.
+		// Probably the valuefactor leading up to the splitpoint, not the one after.
+		// Maybe this should be a struct?
+		// Or maybe I should just implement this badly at first just to get it working, and replace it later?
+		
 		previous_wrap+(delta){0, 10, 0}, // Sleepbreach, 10 hours after previous wrap
 		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5
 		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning
@@ -139,7 +152,7 @@ workday::workday(const moment& previous_wrap,
 		const moment* each_moment = &splitpoints[i];
 		if(*each_moment > call && *each_moment < wrap) {
 			blocks[j++] = timesplit(initial_block, *each_moment);
-			// FIXME: The way timesplit will work is to be reversed, so this will act as expected.
+			// TODO: Timesplit's input and return have been flipped, so check if this works
 		}
 	}
 	
@@ -177,18 +190,16 @@ std::string padint(const int input, const int minimum_signs) {
 }
 
 timeblock timesplit(timeblock& input_block, const moment splitpoint) {
-	// FIXME: Reverse the outputs. second_half replaces input_block, and return the first half.
 	// Splits a timeblock at splitpoint.
 	// It changes the input_block to end at splitpoint, and returns a new timeblock
 	// that lasts from splitpoint to where the input_block used to end.
-	if(splitpoint < input_block.start || splitpoint > input_block.end) {
-		// FIXME: This should use <= and >=, but they don't exist for moments... yet... ;)
+	if(splitpoint <= input_block.start || splitpoint >= input_block.end) {
 		std::cerr << "ERROR: Splitpoint outside of timeblock!\n";
 		std::cerr << "Timeblock: " << timeprint(input_block) << std::endl;
 		std::cerr << "Splitpoint: " << timeprint(splitpoint) << std::endl;
 	}
-	timeblock output{splitpoint, input_block.end};
-	input_block.end = splitpoint;
+	timeblock output{input_block.start, splitpoint};
+	input_block.start = splitpoint; // Note: Now, reversed.
 	return output;
 }
 

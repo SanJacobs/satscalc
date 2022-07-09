@@ -19,7 +19,6 @@ along with this program. If not, see https://www.gnu.org/licenses/
 // TODO: Write function/method/constructor that slices a workday up into the differently priced segments
 // TODO: Make the system that determines the price of each of those slices of time
 // TODO: Add ruleset selector (That only allows you to pick the advert ruleset at first)
-// TODO: Make cool logo
 
 #include <iostream>
 #include "time.h"
@@ -52,17 +51,17 @@ int main(int argc, char* argv[])
 
 			std::cout << "\nSplitting workday into workday and second_half...\n";
 			moment splitpoint{0, 12, 27, 11, 2010};
-			timeblock second_half{timesplit(workday, splitpoint)};
+			timeblock first_half{timesplit(workday, splitpoint)};
 
 			std::cout << "\nSplitpoint: " << timeprint(splitpoint) << std::endl;
+			std::cout << "\nfirst_half:\n";
+			std::cout << timeprint(first_half) << std::endl;
 			std::cout << "\nWorkday:\n";
 			std::cout << timeprint(workday) << std::endl;
-			std::cout << "\nSecond_half:\n";
-			std::cout << timeprint(second_half) << std::endl;
 
 			std::cout << "\nSplitting second_half at erronious point...\n";
-			moment erronious_splitpoint{0, 10, 27, 11, 2010};
-			std::cout << timeprint(timesplit(second_half, erronious_splitpoint)) << "\n";
+			moment erronious_splitpoint{0, 14, 27, 11, 2010};
+			std::cout << timeprint(timesplit(first_half, erronious_splitpoint)) << "\n";
 
 			
 			
