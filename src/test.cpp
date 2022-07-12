@@ -78,6 +78,6 @@ void test(){
 	
 	moment inputmoment = timeinput();
 	std::cout << "Time reveived: " << timeprint(inputmoment) << std::endl;
-	moment inputmoment2 = timeinput(2012, 11, 26);
+	moment inputmoment2 = timeinput(inputmoment);
 	std::cout << "Time reveived: " << timeprint(inputmoment2) << std::endl;
 }

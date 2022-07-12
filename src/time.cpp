@@ -317,14 +317,30 @@ int days_in(int month, int year) {
 }
 
 // TODO: Add checks for correct formatting, and ask for new input if wrong
-moment timeinput(const moment) {
-	char input_string[5];
-	std::cout << "Input time\nHHMM (24-hour format, no space)\n";
-	std::cin >> input_string;
-	moment output{std::stoi(std::string(std::string(1, input_string[2])+input_string[3])),
-			std::stoi(std::string(std::string(1, input_string[0])+input_string[1])),
-			or_day, or_month, or_year};
-			// This is retarded and needs to be completely replaced
+moment timeinput(moment input_moment) {
+	char input_string[6];
+	std::cout << "HH MM (24-hour format, use space)\n";
+	std::cin.getline(input_string, 6);
+	
+	// This uglyness is just how you use strtok() to split a string, apparently
+	const char* p;
+	int split_input[2];
+	int i{0};
+	p = strtok(input_string, " ");
+	while (p != NULL) {
+		split_input[i] = int(atoi(p));
+		i++;
+		p = strtok(NULL, " ");
+	}
+	
+	if((moment){split_input[1], split_input[0],
+			input_moment.day, input_moment.month, input_moment.year} < input_moment)
+	{
+		wind(input_moment, 0, 0, 1);
+	}
+	
+	moment output{split_input[1], split_input[0],
+			input_moment.day, input_moment.month, input_moment.year};
 	return output;
 }
 
