@@ -147,6 +147,15 @@ workday::workday(const moment& previous_wrap,
 		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 7, 0}, // 6, next morning
 	};
 	
+	// Eliminate planned wrap, if it occurs within normal 8-hour period.
+	// This is to make sure the first period of time becomes a pure 8 hours,
+	// which makes detecting the main section of the workday easier.
+	if(splitpoints[5] < splitpoints[3]){
+		splitpoints[5] = splitpoints[3];
+	}
+	
+	std::sort(splitpoints, splitpoints + 10);
+	
 	int j = 0;
 	for(int i = 0; i<=10; i++) {
 		const moment* each_moment = &splitpoints[i];
