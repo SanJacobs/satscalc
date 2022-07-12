@@ -61,9 +61,9 @@ int main(int argc, char* argv[])
 			std::cout << "\n - DAY " << day+1 << "-\nCalltime:\n";
 			moment calltime = timeinput();
 			std::cout << "\nWraptime:\n";
-			moment wraptime = timeinput();
+			moment wraptime = timeinput(calltime);
 			std::cout << "\nPlanned wraptime:\n";
-			moment planned_wraptime = timeinput();
+			moment planned_wraptime = timeinput(calltime);
 			
 			workdays.push_back({previous_wrap,
 					calltime,

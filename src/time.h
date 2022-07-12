@@ -97,7 +97,7 @@ std::string timeprint(const moment input_moment);
 std::string timeprint(const timeblock input_timeblock);
 long sortable_time(const timeblock input_timeblock);
 
-moment timeinput(const int or_year, const int or_month, const int or_day);
+moment timeinput(moment input_moment);
 moment timeinput();
 // TODO: It would be nice to have a version that can take in a const reference to a moment, prompt for clock-time, and return the first moment at that clock-time forward in time from the input moment
 
