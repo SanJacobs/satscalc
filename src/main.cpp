@@ -48,24 +48,39 @@ int main(int argc, char* argv[])
 		
 		std::cout << "-----\nStep 1: Adding the days\n\n";
 		
-		while(1) {
-			std::cout << "Filling in a test-day, and that's it.\n";
-			std::cout << "Storing multiple workdays in an efficient way will be figured out later." << std::endl;
+		std::cout << "How many days do you want to submit?" << std::endl;
+		int number_of_days;
+		// std::cin >> number_of_days;
+		number_of_days = 3; // Just here for debugging
+		std::vector<workday> workdays;
+		
+		moment previous_wrap{0, 16, 20, 11, 1000}; // Set to a long time ago
+		
+		for(int day=0; day<number_of_days; day++) {
 			
-			workday test_day({0, 0, 1, 1, 1000},
-					{0, 8, 20, 11, 2022},
-					{0, 21, 20, 11, 2022},
-					{0, 18, 20, 11, 2022});
+			std::cout << "\n - DAY " << day+1 << "-\nCalltime:\n";
+			moment calltime = timeinput();
+			std::cout << "\nWraptime:\n";
+			moment wraptime = timeinput();
+			std::cout << "\nPlanned wraptime:\n";
+			moment planned_wraptime = timeinput();
 			
-			std::cout << "\nCalltime: " << timeprint(test_day.call) << "\n";
-			std::cout << "Wraptime: " << timeprint(test_day.wrap) << "\n";
-			std::cout << "Planned wrap: " << timeprint(test_day.planned_wrap) << "\n\n";
+			workdays.push_back({previous_wrap,
+					calltime,
+					wraptime,
+					planned_wraptime});
 			
-			for(int i=0; i<test_day.total_timeblocks; i++) {
-				std::cout << "Segment " << i << ": " << timeprint(test_day.blocks[i]) << std::endl;
+			workday* current_workday = &workdays[day];
+			
+			std::cout << "\nCalltime: " << timeprint(current_workday->call) << "\n";
+			std::cout << "Wraptime: " << timeprint(current_workday->wrap) << "\n";
+			std::cout << "Planned wrap: " << timeprint(current_workday->planned_wrap) << "\n\n";
+			
+			for(int i=0; i<current_workday->total_timeblocks; i++) {
+				std::cout << "Timeblock " << i << ": " << timeprint(current_workday->blocks[i])
+					<< ". Total hours: " << current_workday->blocks[i].hourcount() << std::endl;
 			}
-			
-			break;
+			previous_wrap = wraptime;
 		}
 		
 		return 0;

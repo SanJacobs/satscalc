@@ -145,7 +145,6 @@ workday::workday(const moment& previous_wrap,
 		(moment){0, 22, call.day, call.month, call.year}, // 22:00 in the evening
 		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 1, 0}, // Midnight
 		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 7, 0}, // 6, next morning
-		
 	};
 	
 	int j = 0;
@@ -153,12 +152,17 @@ workday::workday(const moment& previous_wrap,
 		const moment* each_moment = &splitpoints[i];
 		if(*each_moment > call && *each_moment < wrap) {
 			blocks[j++] = timesplit(initial_block, *each_moment);
-			// TODO: Timesplit's input and return have been flipped, so check if this works
 		}
 	}
 	
 	blocks[j++] = initial_block;
 	total_timeblocks = j;
+	
+	// TODO: This is really ugly, but I think what I need to do here is:
+	// Loop over the whole thing again to set the valuefactors of every timeblock.
+	
+	
+	
 }
 
 
@@ -313,19 +317,20 @@ int days_in(int month, int year) {
 }
 
 // TODO: Add checks for correct formatting, and ask for new input if wrong
-moment timeinput(int or_year, int or_month, int or_day) {
+moment timeinput(const moment) {
 	char input_string[5];
 	std::cout << "Input time\nHHMM (24-hour format, no space)\n";
 	std::cin >> input_string;
 	moment output{std::stoi(std::string(std::string(1, input_string[2])+input_string[3])),
 			std::stoi(std::string(std::string(1, input_string[0])+input_string[1])),
 			or_day, or_month, or_year};
-			// This is retarded
+			// This is retarded and needs to be completely replaced
 	return output;
 }
+
 moment timeinput() {
 	char input_string[17];
-	std::cout << "Input date and time\nYEAR MM DD hh mm (24-hour format, use spaces)\n";
+	std::cout << "YEAR MM DD hh mm (24-hour format, use spaces)\n";
 	std::cin.getline(input_string, 17);
 	
 	// This uglyness is just how you use strtok() to split a string, apparently
