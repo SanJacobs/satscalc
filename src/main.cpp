@@ -111,12 +111,37 @@ int main(int argc, char* argv[])
 		std::cout << "Copyright 2022 Sander J. Skjegstad.\n";
 		std::cout << "This is free software with ABSOLUTELY NO WARRENTY.\n";
 		std::cout << "It does NOT give financial advice.\n\n";
+
+		std::cout << "-----\nStep 0: Setting the dayrate\n\n";
+
+		//int dayrate_input;
+		//std::cout << "What is your dayrate? ";
+		//std::cin >> dayrate_input;
+		const int dayrate = 3338;
+		std::cout << "Dayrate: " << dayrate << "\n";
+		const double hourly_rate = dayrate/7.5;
+		std::cout << "Hourly rate: " << hourly_rate << "\n\n";
 		
 		std::cout << "-----\nStep 1: Adding the days\n\n";
 		
-		bool not_done = true;
-		while(not_done) {
+		while(1) {
+			std::cout << "Filling in a test-day, and that's it.\n";
+			std::cout << "Storing multiple workdays in an efficient way will be figured out later." << std::endl;
 			
+			workday test_day({0, 0, 1, 1, 1000},
+					{0, 8, 20, 11, 2022},
+					{0, 21, 20, 11, 2022},
+					{0, 18, 20, 11, 2022});
+			
+			std::cout << "\nCalltime: " << timeprint(test_day.call) << "\n";
+			std::cout << "Wraptime: " << timeprint(test_day.wrap) << "\n";
+			std::cout << "Planned wrap: " << timeprint(test_day.planned_wrap) << "\n\n";
+			
+			for(int i=0; i<test_day.total_timeblocks; i++) {
+				std::cout << "Segment " << i << ": " << timeprint(test_day.blocks[i]) << std::endl;
+			}
+			
+			break;
 		}
 		
 		return 0;

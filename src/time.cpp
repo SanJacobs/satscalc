@@ -1,8 +1,9 @@
 #include "time.h"
 
 // Look. listen here. There's no way I'm going to start taking DST into account.
-// I have to draw the line somewhere, and frankly, once you start doing "Change an hour on the 4th moon of the 2nd week of March in France, but only if the tulips haven't sprung... etc... etc.." I'm out.
-// The fact that DST is designed this way, though, makes it so you are unlikely to be on the clock during a DST transition.
+// DST transition times are decided using skull dice, by the grand wizards of the state.
+// The fact that DST is designed this way, though,
+// makes it so you are unlikely to be on the clock during a DST transition.
 
 
 //
@@ -156,6 +157,8 @@ workday::workday(const moment& previous_wrap,
 		}
 	}
 	
+	blocks[j++] = initial_block;
+	total_timeblocks = j;
 }
 
 

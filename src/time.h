@@ -54,7 +54,11 @@ struct workday{
 	moment call;
 	moment wrap;
 	moment planned_wrap;
-	timeblock blocks[14];
+	timeblock blocks[13];
+	int total_timeblocks;
+	// total_timeblocks exsists because blocks[13] can't be shrunk,
+	// so total_timeblocks is the point at which blocks[13] just contains
+	// garbage data.
 	//
 	// 1.  call
 	// 2.  sleepbreach
