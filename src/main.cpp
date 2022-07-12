@@ -16,8 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
 */
 
-// TODO: Write function/method/constructor that slices a workday up into the differently priced segments
-// TODO: Make the system that determines the price of each of those slices of time
+// TODO: Make system that determines the price of each timeblock in workday
 // TODO: Add ruleset selector (That only allows you to pick the advert ruleset at first)
 
 #include <iostream>
