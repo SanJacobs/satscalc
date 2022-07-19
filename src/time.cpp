@@ -135,16 +135,16 @@ workday::workday(const moment& previous_wrap,
 		// Maybe this should be a struct?
 		// Or maybe I should just implement this badly at first just to get it working, and replace it later?
 		
-		previous_wrap+(delta){0, 10, 0}, // Sleepbreach, 10 hours after previous wrap
-		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5
-		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning
-		call+(delta){0, 8, 0}, // Normal 8 hours of work
-		call+(delta){0, 9, 0}, // 1st hour of overtime is over
-		planned_wraptime, // End of warned overtime
-		call+(delta){0, 14, 0}, // The 14-hour mark
-		(moment){0, 22, call.day, call.month, call.year}, // 22:00 in the evening
-		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 1, 0}, // Midnight
-		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 7, 0}, // 6, next morning
+		previous_wrap+(delta){0, 10, 0}, // Sleepbreach, 10 hours after previous wrap			0x
+		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5				1
+		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning					2
+		call+(delta){0, 8, 0}, // Normal 8 hours of work										3x
+		call+(delta){0, 9, 0}, // 1st hour of overtime is over									4
+		planned_wraptime, // End of warned overtime												5
+		call+(delta){0, 14, 0}, // The 14-hour mark												6x
+		(moment){0, 22, call.day, call.month, call.year}, // 22:00 in the evening				7x
+		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 1, 0}, // Midnight			8x
+		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 7, 0}, // 6, next morning	9x
 	};
 	
 	// Eliminate planned wrap, if it occurs within normal 8-hour period.
@@ -167,10 +167,33 @@ workday::workday(const moment& previous_wrap,
 	blocks[j++] = initial_block;
 	total_timeblocks = j;
 	
-	// TODO: This is really ugly, but I think what I need to do here is:
-	// Loop over the whole thing again to set the valuefactors of every timeblock.
+	// THE VALUE-FACTOR CALCULATION PART
 	
+	// TODO: Implement a good system for this fuckin' paragraph:
+	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
 	
+	for(timeblock& each_block : blocks){ // C++11 stuff right here.
+		if(each_block.hourcount() == 8) {
+			each_block.valuefactor = 7.5/8.0;
+			if(each_block.start.getweekday() == saturday) each_block.valuefactor *= 1.5;
+			if(each_block.start.getweekday() == sunday) each_block.valuefactor *= 2;
+			// TODO: This is a bad solution, but it makes other stuff easier for now.
+			// Note: Yes, a simple float is capable of storing 7.5/8*1.5 perfectly.
+			// The real solution is to be able to add lunchbreaks.
+			// Note: It is starting to look like this band-aid solution is untennable even for basic functionality.
+			continue;
+		}
+		if(each_block.end <= splitpoints[0]) each_block.upvalue(3); // +200% for sleep-breach
+		if(each_block.start.hours >= 22) each_block.upvalue(2);			// Work between 22:00
+		if((each_block.end.hours == 6 && each_block.end.minutes == 0) ||// And 06:00
+		   (each_block.end.hours <= 5)) each_block.upvalue(2);			// is +100%
+		if(each_block.start >= splitpoints[3]) {each_block.upvalue(1.5); // Overtime
+			if(each_block.start.getweekday() == saturday) each_block.upvalue(2);// on saturdays
+		}
+		if(each_block.start >= splitpoints[6]) each_block.upvalue(3); // +200% beyond 14-hour mark
+		if(each_block.start.getweekday() == saturday) each_block.upvalue(1.5);// Saturdays are +50%
+		if(each_block.start.getweekday() == sunday) each_block.upvalue(2); // Sundays are +100%
+	}
 	
 }
 
@@ -184,6 +207,11 @@ double timeblock::hourcount() {
 	return (timedelta.minutes/60.0f +
 			timedelta.hours +
 			timedelta.days*24);
+}
+
+float timeblock::upvalue(float suggestion){
+	if(suggestion>valuefactor) valuefactor = suggestion;
+	return valuefactor;
 }
 
 weekday moment::getweekday() {

@@ -49,13 +49,14 @@ struct timeblock{
 	moment end;
 	double hourcount();
 	float valuefactor = 1;
+	float upvalue(float suggestion);
 };
 
 struct workday{
 	moment call;
 	moment wrap;
 	moment planned_wrap;
-	timeblock blocks[13];
+	timeblock blocks[12];
 	int total_timeblocks;
 	// total_timeblocks exsists because blocks[13] can't be shrunk,
 	// so total_timeblocks is the point at which blocks[13] just contains
