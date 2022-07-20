@@ -180,6 +180,7 @@ workday::workday(const moment& previous_wrap,
 	for(timeblock& each_block : blocks){ // C++11 stuff right here.
 		// FIXME: I think this is the source of the crash and infinite loop, because it reaches garbage data.
 		// Limit it to total_timeblocks!
+		// When it doesn't crash, it is because all the garbage moments are: 00:00 0-00-00
 		std::cout << "pricing: " << timeprint(each_block) << std::endl;
 		if(each_block.hourcount() == 8) {
 			each_block.valuefactor = 7.5/8.0;
