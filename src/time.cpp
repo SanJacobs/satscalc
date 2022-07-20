@@ -157,8 +157,9 @@ workday::workday(const moment& previous_wrap,
 	std::sort(splitpoints, splitpoints + 10);
 	
 	int j = 0;
-	for(int i = 0; i<=10; i++) {
+	for(int i = 0; i<10; i++) {
 		const moment* each_moment = &splitpoints[i];
+		std::cout << "Splitting: " << timeprint(*each_moment) << std::endl;
 		if(*each_moment > call && *each_moment < wrap) {
 			blocks[j++] = timesplit(initial_block, *each_moment);
 		}
