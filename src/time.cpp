@@ -159,13 +159,18 @@ workday::workday(const moment& previous_wrap,
 	int j = 0;
 	for(int i = 0; i<10; i++) {
 		const moment* each_moment = &splitpoints[i];
+		std::cout << "Splitting: " << timeprint(*each_moment) << "\t\tJ: " << j << "\t\tI: " << i << std::endl;
 		if(*each_moment > call && *each_moment < wrap) {
 			blocks[j++] = timesplit(initial_block, *each_moment);
 		}
 	}
 	
+	std::cout << "Splitting finished." << std::endl;
+	
 	blocks[j++] = initial_block;
 	total_timeblocks = j;
+	
+	std::cout << "Splitting completely finished." << std::endl;
 	
 	// THE VALUE-FACTOR CALCULATION PART
 	
@@ -173,6 +178,9 @@ workday::workday(const moment& previous_wrap,
 	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
 	
 	for(timeblock& each_block : blocks){ // C++11 stuff right here.
+		// FIXME: I think this is the source of the crash and infinite loop, because it reaches garbage data.
+		// Limit it to total_timeblocks!
+		std::cout << "pricing: " << timeprint(each_block) << std::endl;
 		if(each_block.hourcount() == 8) {
 			each_block.valuefactor = 7.5/8.0;
 			if(each_block.start.getweekday() == saturday) each_block.valuefactor *= 1.5;
