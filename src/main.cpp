@@ -50,24 +50,34 @@ int main(int argc, char* argv[])
 		std::cout << "How many days do you want to submit?" << std::endl;
 		int number_of_days;
 		// std::cin >> number_of_days;
-		number_of_days = 3; // Just here for debugging
+		number_of_days = 1; // Just here for debugging
 		std::vector<workday> workdays;
 		
 		moment previous_wrap{0, 16, 20, 11, 1000}; // Set to a long time ago
 		
 		for(int day=0; day<number_of_days; day++) {
 			
+			// TODO: Asking for everything repeatedly like this is dumb,
+			// and needs to be replaced with a menu system.
+			// TODO: Inputing the dates should be done with a custom function and layout,
+			// not std::cin, because it openly allows for invalid input
 			std::cout << "\n - DAY " << day+1 << "-\nCalltime:\n";
 			moment calltime = timeinput();
 			std::cout << "\nWraptime:\n";
 			moment wraptime = timeinput(calltime);
 			std::cout << "\nPlanned wraptime:\n";
 			moment planned_wraptime = timeinput(calltime);
+			std::cout << "\nLunch start:\n";
+			moment lunch_start = timeinput(calltime);
+			std::cout << "\nLunch end:\n";
+			moment lunch_end = timeinput(calltime);
 			
 			workdays.push_back({previous_wrap,
 					calltime,
 					wraptime,
 					planned_wraptime});
+			
+			if(lunch_start != lunch_end) workdays[day].lunch(lunch_start, lunch_end);
 			
 			workday* current_workday = &workdays[day];
 			

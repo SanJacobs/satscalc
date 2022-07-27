@@ -176,20 +176,12 @@ workday::workday(const moment& previous_wrap,
 	
 	// TODO: Implement a good system for this fuckin' paragraph:
 	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
+	// TODO: Add the ability to cut out a lunch break
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
 		timeblock& each_block = blocks[ii];
 		std::cout << "pricing: " << timeprint(each_block) << std::endl;
-		if(each_block.hourcount() == 8) {
-			each_block.valuefactor = 7.5/8.0;
-			if(each_block.start.getweekday() == saturday) each_block.valuefactor *= 1.5;
-			if(each_block.start.getweekday() == sunday) each_block.valuefactor *= 2;
-			// TODO: This is a bad solution, but it makes other stuff easier for now.
-			// Note: Yes, a simple float is capable of storing 7.5/8*1.5 perfectly.
-			// The real solution is to be able to add lunchbreaks.
-			// Note: It is starting to look like this band-aid solution is untennable even for basic functionality.
-			continue;
-		}
+		
 		if(each_block.end <= splitpoints[0]) each_block.upvalue(3); // +200% for sleep-breach
 		if(each_block.start.hours >= 22) each_block.upvalue(2);			// Work between 22:00
 		if((each_block.end.hours == 6 && each_block.end.minutes == 0) ||// And 06:00
@@ -202,6 +194,45 @@ workday::workday(const moment& previous_wrap,
 		if(each_block.start.getweekday() == sunday) each_block.upvalue(2); // Sundays are +100%
 	}
 	
+}
+
+void workday::lunch(const moment& lunch_start, const moment& lunch_end) {
+	if(lunch_start > lunch_end){
+		std::cout << "ERROR: Lunch ends before it began." << std::endl;
+	}
+	for(int ii=0; ii < total_timeblocks; ii++){
+		timeblock& each_block = blocks[ii];
+		timeblock& next_block = blocks[ii+1];
+		
+		if(each_block.start < lunch_start && each_block.end > lunch_end){
+			// If lunch simply occurs within a timeblock
+			// Split out the section, discarding the middle
+			timeblock second_half = timesplit(each_block, lunch_start);
+			second_half.start = lunch_end;
+			// Move all points after lunch out by 1
+			for(int x=total_timeblocks; x>ii; x--) {
+				blocks[x+1] = blocks[x];
+			}
+			total_timeblocks++;
+			// Re-insert second half of split section into ii+1
+			blocks[ii+1] = second_half;
+			
+		} else if(each_block.start < lunch_start && lunch_start < each_block.end &&
+				  next_block.start < lunch_end && lunch_end < next_block.end) {
+			// If lunch occurs between two timeblocks
+			each_block.end = lunch_start;
+			next_block.start = lunch_end;
+			
+		} else if(each_block.start == lunch_start) {
+			// If lunch starts at the beginning of a timeblock
+			each_block.start = lunch_end;
+			
+		} else if(each_block.end == lunch_end) {
+			// If lunch ends at the end of a timeblock
+			each_block.start = lunch_end;
+		}
+		return;
+	}
 }
 
 

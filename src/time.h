@@ -56,11 +56,11 @@ struct workday{
 	moment call;
 	moment wrap;
 	moment planned_wrap;
-	timeblock blocks[12];
+	timeblock blocks[15];
 	int total_timeblocks;
-	// total_timeblocks exsists because blocks[13] can't be shrunk,
-	// so total_timeblocks is the point at which blocks[13] just contains
-	// garbage data.
+	// total_timeblocks exsists because blocks can't be shrunk,
+	// so total_timeblocks is the point at which blocks
+	// just contains garbage data.
 	//
 	// 1.  call
 	// 2.  sleepbreach
@@ -79,13 +79,12 @@ struct workday{
 				const moment& calltime,
 				const moment& wraptime,
 				const moment& planned_wraptime);
+	void lunch(const moment& lunch_start, const moment& lunch_end);
 };
 
 std::string padint(const int input, const int minimum_signs);
 
 timeblock timesplit(timeblock& input_block, const moment splitpoint);
-		// XXX: I have now found that it would be really nice if the first half is returned,
-		//		and the second half replaces the instance at input_block;
 	// Splits a timeblock at splitpoint.
 	// It changes the input_block to end at splitpoint, and returns a new timeblock
 	// that lasts from splitpoint to where the input_block used to end.
@@ -101,5 +100,5 @@ long sortable_time(const timeblock input_timeblock);
 
 moment timeinput(moment input_moment);
 moment timeinput();
-// TODO: It would be nice to have a version that can take in a const reference to a moment, prompt for clock-time, and return the first moment at that clock-time forward in time from the input moment
+// TODO: Completely re-write timeinput to be beautiful and enforce valid dates
 
