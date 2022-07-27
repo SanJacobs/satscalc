@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
 */
 
-// TODO: Make system that determines the price of each timeblock in workday
 // TODO: Add ruleset selector (That only allows you to pick the advert ruleset at first)
 
 #include <iostream>
@@ -87,7 +86,8 @@ int main(int argc, char* argv[])
 			
 			for(int i=0; i<current_workday->total_timeblocks; i++) {
 				std::cout << "Timeblock " << i << ": " << timeprint(current_workday->blocks[i])
-					<< ". Total hours: " << current_workday->blocks[i].hourcount() << std::endl;
+					<< ". Total hours: " << current_workday->blocks[i].hourcount()
+					<< "\t Valuefactor: " << current_workday->blocks[i].valuefactor << std::endl;
 			}
 			previous_wrap = wraptime;
 		}

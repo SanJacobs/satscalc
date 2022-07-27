@@ -176,7 +176,8 @@ workday::workday(const moment& previous_wrap,
 	
 	// TODO: Implement a good system for this fuckin' paragraph:
 	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
-	// TODO: Add the ability to cut out a lunch break
+	// TODO: Complete the valuefactor calculation ruleset
+	// Including, Easter and other holidays
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
 		timeblock& each_block = blocks[ii];
@@ -207,15 +208,15 @@ void workday::lunch(const moment& lunch_start, const moment& lunch_end) {
 		if(each_block.start < lunch_start && each_block.end > lunch_end){
 			// If lunch simply occurs within a timeblock
 			// Split out the section, discarding the middle
-			timeblock second_half = timesplit(each_block, lunch_start);
-			second_half.start = lunch_end;
+			timeblock first_half = timesplit(each_block, lunch_start);
+			each_block.start = lunch_end;
 			// Move all points after lunch out by 1
-			for(int x=total_timeblocks; x>ii; x--) {
+			for(int x=total_timeblocks; x>=ii; x--) {
 				blocks[x+1] = blocks[x];
 			}
 			total_timeblocks++;
 			// Re-insert second half of split section into ii+1
-			blocks[ii+1] = second_half;
+			blocks[ii] = first_half;
 			
 		} else if(each_block.start < lunch_start && lunch_start < each_block.end &&
 				  next_block.start < lunch_end && lunch_end < next_block.end) {
@@ -231,6 +232,9 @@ void workday::lunch(const moment& lunch_start, const moment& lunch_end) {
 			// If lunch ends at the end of a timeblock
 			each_block.start = lunch_end;
 		}
+		// FIXME: If lunch spans across more than 1 border between timeblocks, bad stuff will happen.
+		// Maybe there is a more principled way of solving this, that doesn't require writing code
+		// for a bunch of edge-cases. If not, write the code.
 		return;
 	}
 }
@@ -273,14 +277,16 @@ std::string padint(const int input, const int minimum_signs) {
 
 timeblock timesplit(timeblock& input_block, const moment splitpoint) {
 	// Splits a timeblock at splitpoint.
-	// It changes the input_block to end at splitpoint, and returns a new timeblock
-	// that lasts from splitpoint to where the input_block used to end.
+	// It changes the input_block to start at splitpoint, and returns a new timeblock
+	// that lasts from where the input_block used to start, to splitpoint.
+	// FIXME: timesplit will reset valuefactor of the first half
 	if(splitpoint <= input_block.start || splitpoint >= input_block.end) {
 		std::cerr << "ERROR: Splitpoint outside of timeblock!\n";
 		std::cerr << "Timeblock: " << timeprint(input_block) << std::endl;
 		std::cerr << "Splitpoint: " << timeprint(splitpoint) << std::endl;
 	}
 	timeblock output{input_block.start, splitpoint};
+	output.valuefactor = input_block.valuefactor;
 	input_block.start = splitpoint; // Note: Now, reversed.
 	return output;
 }
