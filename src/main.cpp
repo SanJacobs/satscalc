@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 				std::cout << "[4] Lunch: " << timeprint((timeblock){lunch_start, lunch_end}) << "\n" << std::endl;
 				// TODO: Add second lunch option
 				
-				std::cout << "Write the number for what you want to change, or 0, to go to the next day." << std::endl;
+				std::cout << "Write the number for what you want to change, or 0 to go to the next day." << std::endl;
 				
 				int input_number = 8;
 				std::cin >> input_number;
