@@ -154,20 +154,21 @@ workday::workday(const moment& previous_wrap,
 		splitpoints[5] = splitpoints[3];
 	}
 	
-	std::sort(splitpoints, splitpoints + 10);
+	moment splitpoints_sorted[10];
+	std::copy(splitpoints, splitpoints+10, splitpoints_sorted);
+	std::sort(splitpoints_sorted, splitpoints_sorted + 10);
 	
 	int j = 0;
 	for(int i = 0; i<10; i++) {
-		const moment* each_moment = &splitpoints[i];
+		const moment* each_moment = &splitpoints_sorted[i];
 		//std::cout << "Splitting: " << timeprint(*each_moment) << "\t\tJ: " << j << "\t\tI: " << i << std::endl;
-		if(*each_moment > call && *each_moment < wrap) {
+		// If each splitpoint moment is within the workday, and is not equal to the start of the current block
+		if(*each_moment > call && *each_moment < wrap && *each_moment != initial_block.start) {
 			blocks[j++] = timesplit(initial_block, *each_moment);
 		}
 	}
 	
 	//std::cout << "Splitting finished." << std::endl;
-	
-	// TODO: Clean away all timeblocks that are 0 in length
 	
 	blocks[j++] = initial_block;
 	total_timeblocks = j;
