@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <string.h>
 #include <vector>
-#include <bits/stdc++.h>
+#include <algorithm>
 
 enum weekday{
 	monday,

@@ -137,7 +137,7 @@ workday::workday(const moment& previous_wrap,
 		
 		previous_wrap+(delta){0, 10, 0}, // Sleepbreach, 10 hours after previous wrap			0x
 		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5				1
-		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning					2
+		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning					2x
 		call+(delta){0, 8, 0}, // Normal 8 hours of work										3x
 		call+(delta){0, 9, 0}, // 1st hour of overtime is over									4
 		planned_wraptime, // End of warned overtime												5
