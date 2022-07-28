@@ -159,18 +159,20 @@ workday::workday(const moment& previous_wrap,
 	int j = 0;
 	for(int i = 0; i<10; i++) {
 		const moment* each_moment = &splitpoints[i];
-		std::cout << "Splitting: " << timeprint(*each_moment) << "\t\tJ: " << j << "\t\tI: " << i << std::endl;
+		//std::cout << "Splitting: " << timeprint(*each_moment) << "\t\tJ: " << j << "\t\tI: " << i << std::endl;
 		if(*each_moment > call && *each_moment < wrap) {
 			blocks[j++] = timesplit(initial_block, *each_moment);
 		}
 	}
 	
-	std::cout << "Splitting finished." << std::endl;
+	//std::cout << "Splitting finished." << std::endl;
+	
+	// TODO: Clean away all timeblocks that are 0 in length
 	
 	blocks[j++] = initial_block;
 	total_timeblocks = j;
 	
-	std::cout << "Splitting completely finished." << std::endl;
+	//std::cout << "Splitting completely finished." << std::endl;
 	
 	// THE VALUE-FACTOR CALCULATION PART
 	
@@ -181,7 +183,7 @@ workday::workday(const moment& previous_wrap,
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
 		timeblock& each_block = blocks[ii];
-		std::cout << "pricing: " << timeprint(each_block) << std::endl;
+		//std::cout << "pricing: " << timeprint(each_block) << std::endl;
 		
 		if(each_block.end <= splitpoints[0]) each_block.upvalue(3); // +200% for sleep-breach
 		if(each_block.start.hours >= 22) each_block.upvalue(2);			// Work between 22:00
@@ -203,7 +205,7 @@ void workday::lunch(const moment& lunch_start, const moment& lunch_end) {
 	}
 	for(int ii=0; ii < total_timeblocks; ii++){
 		timeblock& each_block = blocks[ii];
-		timeblock& next_block = blocks[ii+1];
+		timeblock& next_block = blocks[ii+1]; // FIXME: On final loop, next_block will be garbage data
 		
 		if(each_block.start < lunch_start && each_block.end > lunch_end){
 			// If lunch simply occurs within a timeblock
@@ -217,26 +219,31 @@ void workday::lunch(const moment& lunch_start, const moment& lunch_end) {
 			total_timeblocks++;
 			// Re-insert second half of split section into ii+1
 			blocks[ii] = first_half;
+			return;
 			
-		} else if(each_block.start < lunch_start && lunch_start < each_block.end &&
+		} else if(ii!=total_timeblocks-1 && each_block.start < lunch_start && lunch_start < each_block.end &&
 				  next_block.start < lunch_end && lunch_end < next_block.end) {
+			// If we're not on the final block AND
 			// If lunch occurs between two timeblocks
 			each_block.end = lunch_start;
 			next_block.start = lunch_end;
+			return;
 			
 		} else if(each_block.start == lunch_start) {
 			// If lunch starts at the beginning of a timeblock
 			each_block.start = lunch_end;
+			return;
 			
 		} else if(each_block.end == lunch_end) {
 			// If lunch ends at the end of a timeblock
 			each_block.start = lunch_end;
+			return;
 		}
 		// FIXME: If lunch spans across more than 1 border between timeblocks, bad stuff will happen.
 		// Maybe there is a more principled way of solving this, that doesn't require writing code
 		// for a bunch of edge-cases. If not, write the code.
-		return;
 	}
+	return;
 }
 
 
@@ -400,7 +407,7 @@ int days_in(int month, int year) {
 // TODO: Add checks for correct formatting, and ask for new input if wrong
 moment timeinput(moment input_moment) {
 	char input_string[6];
-	std::cout << "HH MM (24-hour format, use space)\n";
+	std::cout << "HH MM (24-hour format, use space)" << std::endl;
 	std::cin.getline(input_string, 6);
 	
 	// This uglyness is just how you use strtok() to split a string, apparently

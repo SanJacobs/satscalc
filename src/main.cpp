@@ -36,20 +36,23 @@ int main(int argc, char* argv[])
 
 		std::cout << "-----\nStep 0: Setting the dayrate\n\n";
 
-		//int dayrate_input;
-		//std::cout << "What is your dayrate? ";
-		//std::cin >> dayrate_input;
-		const int dayrate = 3338;
-		std::cout << "Dayrate: " << dayrate << "\n";
+		int dayrate_input;
+		std::cout << "Dayrate: ";
+		std::cin >> dayrate_input;
+		std::cin.ignore();
+		const int dayrate = dayrate_input;
+		
 		const double hourly_rate = dayrate/7.5;
 		std::cout << "Hourly rate: " << hourly_rate << "\n\n";
 		
 		std::cout << "-----\nStep 1: Adding the days\n\n";
 		
-		std::cout << "How many days do you want to submit?" << std::endl;
+		std::cout << "How many days do you want to enter? ";
 		int number_of_days;
-		// std::cin >> number_of_days;
-		number_of_days = 1; // Just here for debugging
+		std::cin >> number_of_days;
+		std::cin.ignore();
+		//number_of_days = 1; // Just here for debugging
+		delta default_daylength{0, 8, 0};
 		std::vector<workday> workdays;
 		
 		moment previous_wrap{0, 16, 20, 11, 1000}; // Set to a long time ago
@@ -62,14 +65,63 @@ int main(int argc, char* argv[])
 			// not std::cin, because it openly allows for invalid input
 			std::cout << "\n - DAY " << day+1 << "-\nCalltime:\n";
 			moment calltime = timeinput();
-			std::cout << "\nWraptime:\n";
-			moment wraptime = timeinput(calltime);
-			std::cout << "\nPlanned wraptime:\n";
-			moment planned_wraptime = timeinput(calltime);
-			std::cout << "\nLunch start:\n";
-			moment lunch_start = timeinput(calltime);
-			std::cout << "\nLunch end:\n";
-			moment lunch_end = timeinput(calltime);
+			
+			moment wraptime = calltime+default_daylength;
+			moment planned_wraptime = wraptime;
+			// TODO: Maybe lunch should be 0000-00-00 00:00 if day is short.
+			moment lunch_start = calltime+(delta){0,4,0}; 
+			moment lunch_end = lunch_start+(delta){30,0,0};
+			
+			std::cout << "\n------------- DAY " << day+1 << " -------------\n";
+			while(1) {
+				std::cout << "[1] Calltime: " << timeprint(calltime) << "\n";
+				std::cout << "[2] Wraptime: " << timeprint(wraptime) << "\n";
+				std::cout << "[3] Planned wrap: " << timeprint(planned_wraptime) << "\n";
+				std::cout << "[4] Lunch: " << timeprint((timeblock){lunch_start, lunch_end}) << "\n" << std::endl;
+				// TODO: Add second lunch option
+				
+				std::cout << "Write the number for what you want to change, or 0, to go to the next day." << std::endl;
+				
+				int input_number = 8;
+				std::cin >> input_number;
+				std::cin.ignore();
+				
+				switch (input_number) {
+					case 0:
+						goto done;
+					case 1:
+						std::cout << "Changing calltime.\n";
+						calltime = timeinput();
+						break;
+					case 2:
+						std::cout << "Changing actual wraptime.\n";
+						wraptime = timeinput(calltime);
+						break;
+					case 3:
+						std::cout << "Changing planned wraptime.\n";
+						planned_wraptime = timeinput(calltime);
+						break;
+					case 4:
+						std::cout << "Changing lunch-time.\n";
+						std::cout << "Lunch start:\n";
+						lunch_start = timeinput(calltime);
+						std::cout << "Lunch end:\n";
+						lunch_end = timeinput(calltime);
+						break;
+					default:
+						std::cout << "ERROR: That's not a valid number, ya doofus. 1, 2, 3, 4 or 0 only." << std::endl;
+				}
+			}
+done:
+			
+			//std::cout << "\nWraptime:\n";
+			//moment wraptime = timeinput(calltime);
+			//std::cout << "\nPlanned wraptime:\n";
+			//moment planned_wraptime = timeinput(calltime);
+			//std::cout << "\nLunch start:\n";
+			//moment lunch_start = timeinput(calltime);
+			//std::cout << "\nLunch end:\n";
+			//moment lunch_end = timeinput(calltime);
 			
 			workdays.push_back({previous_wrap,
 					calltime,
@@ -91,6 +143,25 @@ int main(int argc, char* argv[])
 			}
 			previous_wrap = wraptime;
 		}
+		
+		double total_sum = 0;
+		for(int ii=0; ii < number_of_days; ii++) {
+			workday& each_day = workdays[ii];
+			double day_price = 0;
+			std::cout << "\n ----- Day " << ii+1 << " ----- " << "\n";
+			
+			for(int jj=0; jj < each_day.total_timeblocks; jj++) {
+				timeblock& each_block = each_day.blocks[jj];
+				double block_price = each_block.hourcount() * hourly_rate * each_block.valuefactor;
+				std::cout << "Price of block " << jj << ": " << block_price << "\n";
+				day_price += block_price;
+			}
+			std::cout << "Price of day " << ii+1 << ": " << day_price << "\n";
+			total_sum += day_price;
+		}
+		
+		std::cout << "\nSUM: " << total_sum << std::endl;
+		
 		
 		return 0;
 	}
