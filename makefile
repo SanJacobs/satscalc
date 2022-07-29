@@ -19,6 +19,7 @@ a.out: $(OBJECTS)
 	g++ $(LIBDIR) $(LIBS) $(OBJECTS)
 
 $(OBJECTS): obj/%.o : src/%.cpp
+	mkdir -p obj
 	g++ -g $(INCLUDE) -c $< -o $@
 
 clean:
@@ -26,3 +27,6 @@ clean:
 
 cleanall:
 	rm obj/*.o a.out
+
+install: a.out
+	cp a.out /usr/bin/satscalc
