@@ -139,8 +139,8 @@ workday::workday(const moment& previous_wrap,
 		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5				1
 		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning					2x
 		call+(delta){0, 8, 0}, // Normal 8 hours of work										3x
-		call+(delta){0, 9, 0}, // 1st hour of overtime is over									4
-		planned_wraptime, // End of warned overtime												5
+		call+(delta){0, 9, 0}, // 1st hour of overtime is over									4x
+		planned_wraptime, // End of warned overtime												5x
 		call+(delta){0, 14, 0}, // The 14-hour mark												6x
 		(moment){0, 22, call.day, call.month, call.year}, // 22:00 in the evening				7x
 		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 1, 0}, // Midnight			8x
@@ -196,6 +196,8 @@ workday::workday(const moment& previous_wrap,
 		if(each_block.start >= splitpoints[3]) {each_block.upvalue(1.5); // Overtime
 			if(each_block.start.getweekday() == saturday) each_block.upvalue(2);// on saturdays
 		}
+		if(each_block.start >= planned_wraptime &&							// Unwarned overtime
+				each_block.start >= splitpoints[4]) each_block.upvalue(2);	// +100% after first hour
 		if(each_block.start >= splitpoints[6]) each_block.upvalue(3); // +200% beyond 14-hour mark
 		if(each_block.start.getweekday() == saturday) each_block.upvalue(1.5);// Saturdays are +50%
 		if(each_block.start.getweekday() == sunday) each_block.upvalue(2); // Sundays are +100%
