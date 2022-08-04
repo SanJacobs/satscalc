@@ -1,6 +1,9 @@
-# INCLUDE is where you find the headerfiles for the libs you're using. They are used during compilation.
+# INCLUDE is where you find the header files for the libs you're using. They are used during compilation.
 # Example: -I /usr/include/boost/
 INCLUDE=
+
+# Enabling C++17 mode so I can have more <algorithm> stuff
+CFLAGS=-std=c++17
 
 # LIBDIR is where you can find the linkable objects or whatever. They are used for the linking stage.
 LIBDIR=-L /usr/lib/x86_64-linux-gnu/
@@ -16,11 +19,11 @@ OBJECTS=$(patsubst src/%.cpp, $(OBJDIR)%.o, $(SOURCES))
 # This last line creates an identical list of objects based on the list of .cpp files.
 
 a.out: $(OBJECTS)
-	g++ $(LIBDIR) $(LIBS) $(OBJECTS)
+	g++ $(LIBDIR) $(CFLAGS) $(LIBS) $(OBJECTS)
 
 $(OBJECTS): obj/%.o : src/%.cpp
 	mkdir -p obj
-	g++ -g $(INCLUDE) -c $< -o $@
+	g++ -g $(INCLUDE) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm obj/*.o
