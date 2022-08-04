@@ -127,8 +127,16 @@ workday::workday(const moment& previous_wrap,
 	call = calltime;
 	wrap = wraptime;
 	planned_wrap = planned_wraptime;
-	timeblock initial_block{call, wrap};
-	moment splitpoints[10]{ // --$-- Points where the price may change --$-- //
+	timeblock initial_block{call,
+		std::max(
+		// Paragraph 6.7 says that up to 2 hours of unused warned overtime counts as worktime, though so that at least one hour of the unused overtime is not counted.
+		// (It's unclear if an 8-hour day that ends 3 hours in counts as having 5 hours of unused overtime)
+		std::clamp(planned_wrap-(delta){0, 1, 0}, wraptime, planned_wraptime+(delta){0, 2, 0}),
+			call+(delta){0, 4, 0})}; 
+		//  ^ Minimum 4 hour day ^
+	
+	const int sp_length = 10;
+	moment splitpoints[sp_length]{ // --$-- Points where the price may change --$-- //
 		
 		// NOTE: Maybe this should also contain the valuefactor associated with the split.
 		// Probably the valuefactor leading up to the splitpoint, not the one after.
@@ -154,12 +162,12 @@ workday::workday(const moment& previous_wrap,
 		splitpoints[5] = splitpoints[3];
 	}
 	
-	moment splitpoints_sorted[10];
-	std::copy(splitpoints, splitpoints+10, splitpoints_sorted);
-	std::sort(splitpoints_sorted, splitpoints_sorted + 10);
+	moment splitpoints_sorted[sp_length];
+	std::copy(splitpoints, splitpoints+sp_length, splitpoints_sorted);
+	std::sort(splitpoints_sorted, splitpoints_sorted + sp_length);
 	
 	int j = 0;
-	for(int i = 0; i<10; i++) {
+	for(int i = 0; i<sp_length; i++) {
 		const moment* each_moment = &splitpoints_sorted[i];
 		//std::cout << "Splitting: " << timeprint(*each_moment) << "\t\tJ: " << j << "\t\tI: " << i << std::endl;
 		// If each splitpoint moment is within the workday, and is not equal to the start of the current block
@@ -182,7 +190,7 @@ workday::workday(const moment& previous_wrap,
 	// TODO: Implement a good system for this fuckin' paragraph:
 	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
 	// TODO: And this paragraph, which seems to say that planned being beyond actual wrap is a relevant case
-	// Varslet overtid som ikke benyttes honoreres med inntil to timer etter de vanlige overtidssatser, dog slik at én time av den ubenyttede overtiden ikke honoreres .
+	// Varslet overtid som ikke benyttes honoreres med inntil to timer etter de vanlige overtidssatser, dog slik at én time av den ubenyttede overtiden ikke honoreres.
 	// TODO: Add reasons for the upped valuefactors.
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
