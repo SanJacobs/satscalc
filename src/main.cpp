@@ -59,8 +59,6 @@ int main(int argc, char* argv[])
 		
 		for(int day=0; day<number_of_days; day++) {
 			
-			// TODO: Asking for everything repeatedly like this is dumb,
-			// and needs to be replaced with a menu system.
 			// TODO: Inputing the dates should be done with a custom function and layout,
 			// not std::cin, because it openly allows for invalid input
 			std::cout << "\n - DAY " << day+1 << "-\nCalltime:\n";
@@ -72,8 +70,9 @@ int main(int argc, char* argv[])
 			moment lunch_start = calltime+(delta){0,4,0}; 
 			moment lunch_end = lunch_start+(delta){30,0,0};
 			
-			std::cout << "\n------------- DAY " << day+1 << " -------------\n";
 			while(1) {
+				std::cout << "\033[2J\033[1;1H";
+				std::cout << "\n------------- DAY " << day+1 << " -------------\n";
 				std::cout << "[1] Calltime: " << timeprint(calltime) << "\n";
 				std::cout << "[2] Wraptime: " << timeprint(wraptime) << "\n";
 				std::cout << "[3] Planned wrap: " << timeprint(planned_wraptime) << "\n";
@@ -86,6 +85,7 @@ int main(int argc, char* argv[])
 				std::cin >> input_number;
 				std::cin.ignore();
 				
+				std::cout << "\n";
 				switch (input_number) {
 					case 0:
 						goto done;
@@ -114,15 +114,6 @@ int main(int argc, char* argv[])
 			}
 done:
 			
-			//std::cout << "\nWraptime:\n";
-			//moment wraptime = timeinput(calltime);
-			//std::cout << "\nPlanned wraptime:\n";
-			//moment planned_wraptime = timeinput(calltime);
-			//std::cout << "\nLunch start:\n";
-			//moment lunch_start = timeinput(calltime);
-			//std::cout << "\nLunch end:\n";
-			//moment lunch_end = timeinput(calltime);
-			
 			workdays.push_back({previous_wrap,
 					calltime,
 					wraptime,
@@ -141,22 +132,28 @@ done:
 					<< ". Total hours: " << current_workday->blocks[i].hourcount()
 					<< "\t Valuefactor: " << current_workday->blocks[i].valuefactor << std::endl;
 			}
+			
+			// This assumes that the user is entering things chronologically, which they may not be
 			previous_wrap = wraptime;
+			std::cout << "\033[2J\033[1;1H";
 		}
+		std::cout << "\n\n\n -+-+-+-+-+-+-+- CALCULATION -+-+-+-+-+-+-+-\n\n";
+		std::cout << "Dayrate: " << dayrate << "\n";
+		std::cout << "Hourly rate: " << hourly_rate << "\n";
 		
 		double total_sum = 0;
 		for(int ii=0; ii < number_of_days; ii++) {
 			workday& each_day = workdays[ii];
 			double day_price = 0;
-			std::cout << "\n ----- Day " << ii+1 << " ----- " << "\n";
+			std::cout << "\n ----- Day " << ii+1 << ": " << timeprint(each_day.call, false) << " ----- " << "\n";
 			
 			for(int jj=0; jj < each_day.total_timeblocks; jj++) {
 				timeblock& each_block = each_day.blocks[jj];
 				double block_price = each_block.hourcount() * hourly_rate * each_block.valuefactor;
-				std::cout << "Price of block " << jj << ": " << block_price << "\n";
+				std::cout << timeprint(each_block, true) << ", " << each_block.hourcount() << "h\t+" << (each_block.valuefactor-1)*100 << "%\t= " << block_price << "\n";
 				day_price += block_price;
 			}
-			std::cout << "Price of day " << ii+1 << ": " << day_price << "\n";
+			std::cout << "Price of day " << ii+1 << ": " << day_price << std::endl;
 			total_sum += day_price;
 		}
 		

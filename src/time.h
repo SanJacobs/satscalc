@@ -95,7 +95,9 @@ void wind(moment& input_moment, const delta& time_delta);
 int days_in(const int month, const int year);
 
 std::string timeprint(const moment input_moment);
+std::string timeprint(const moment input_moment, bool clockonly);
 std::string timeprint(const timeblock input_timeblock);
+std::string timeprint(const timeblock input_timeblock, bool clockonly);
 long sortable_time(const timeblock input_timeblock);
 
 moment timeinput(moment input_moment);

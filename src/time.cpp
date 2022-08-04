@@ -177,10 +177,13 @@ workday::workday(const moment& previous_wrap,
 	
 	// THE VALUE-FACTOR CALCULATION PART
 	
-	// TODO: Implement a good system for this fuckin' paragraph:
-	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
 	// TODO: Complete the valuefactor calculation ruleset
 	// Including, Easter and other holidays
+	// TODO: Implement a good system for this fuckin' paragraph:
+	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
+	// TODO: And this paragraph, which seems to say that planned being beyond actual wrap is a relevant case
+	// Varslet overtid som ikke benyttes honoreres med inntil to timer etter de vanlige overtidssatser, dog slik at én time av den ubenyttede overtiden ikke honoreres .
+	// TODO: Add reasons for the upped valuefactors.
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
 		timeblock& each_block = blocks[ii];
@@ -287,7 +290,7 @@ timeblock timesplit(timeblock& input_block, const moment splitpoint) {
 	// Splits a timeblock at splitpoint.
 	// It changes the input_block to start at splitpoint, and returns a new timeblock
 	// that lasts from where the input_block used to start, to splitpoint.
-	// FIXME: timesplit will reset valuefactor of the first half
+	// BASICALLY: input_block becomes first half, output is second half.
 	if(splitpoint <= input_block.start || splitpoint >= input_block.end) {
 		std::cerr << "ERROR: Splitpoint outside of timeblock!\n";
 		std::cerr << "Timeblock: " << timeprint(input_block) << std::endl;
@@ -361,9 +364,28 @@ std::string timeprint(moment input_moment) {
 		+ padint(input_moment.day, 2);
 	return output;
 }
+std::string timeprint(moment input_moment, bool clockonly) {
+	using namespace std;
+	string output;
+	if(clockonly) {
+		output =
+			padint(input_moment.hours, 2) + ":"
+			+ padint(input_moment.minutes, 2);
+	} else {
+		output =
+			to_string(input_moment.year) + "-"
+			+ padint(input_moment.month, 2) + "-"
+			+ padint(input_moment.day, 2);
+	}
+	return output;
+}
 
 std::string timeprint(timeblock input_timeblock) {
 	std::string output{timeprint(input_timeblock.start) + " --> " + timeprint(input_timeblock.end)};
+	return output;
+}
+std::string timeprint(timeblock input_timeblock, bool clockonly) {
+	std::string output{timeprint(input_timeblock.start, clockonly) + " --> " + timeprint(input_timeblock.end, clockonly)};
 	return output;
 }
 
