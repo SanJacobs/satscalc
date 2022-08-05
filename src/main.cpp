@@ -22,6 +22,8 @@ along with this program. If not, see https://www.gnu.org/licenses/
 #include "time.h"
 #include "test.h"
 
+#define CLEAR "\033[2J\033[1;1H";
+
 int main(int argc, char* argv[])
 {
 	if(argc > 1){
@@ -36,23 +38,73 @@ int main(int argc, char* argv[])
 
 		std::cout << "-----\nStep 0: Setting the dayrate\n\n";
 
-		int dayrate_input;
+		int dayrate;
 		std::cout << "Dayrate: ";
-		std::cin >> dayrate_input;
+		std::cin >> dayrate;
 		std::cin.ignore();
-		const int dayrate = dayrate_input;
 		
-		const double hourly_rate = dayrate/7.5;
+		long double hourly_rate = dayrate/7.5;
 		std::cout << "Hourly rate: " << hourly_rate << "\n\n";
-		
-		std::cout << "-----\nStep 1: Adding the days\n\n";
 		
 		std::cout << "How many days do you want to enter? ";
 		int number_of_days;
 		std::cin >> number_of_days;
 		std::cin.ignore();
-		//number_of_days = 1; // Just here for debugging
 		delta default_daylength{0, 8, 0};
+		long double social_costs = 1.26;
+		
+		while(1) {
+			std::cout << CLEAR;
+			std::cout << "\n------------- Setup and defaults -------------\n";
+			std::cout << "[d] Dayrate: " << dayrate << " (" << hourly_rate << " hourly)\n";
+			std::cout << "[w] Workdays to input: " << number_of_days << "\n";
+			std::cout << "[l] Default length of workday: " << default_daylength.hours << "h\n";
+			std::cout << "[s] Social costs: " << (social_costs-1)*100 << "%\n";
+			//std::cout << "[l] Lunch: " << timeprint((timeblock){lunch_start, lunch_end}) << "\n" << std::endl;
+			
+			std::cout << "\nWrite the letter for what you want to change, or 0 to continue." << std::endl;
+			
+			char input_char = '5';
+			std::cin >> input_char;
+			std::cin.ignore();
+			
+			std::cout << "\n";
+			switch (input_char) {
+				case '0':
+					goto setup_done;
+				case 'd':
+					std::cout << "Changing dayrate.\nDayrate: ";
+					std::cin >> dayrate;
+					std::cin.ignore();
+					hourly_rate = dayrate/7.5;
+					break;
+				case 'w':
+					std::cout << "Changing number of workdays.\nDays: ";
+					std::cin >> number_of_days;
+					std::cin.ignore();
+					break;
+				case 'l':
+					std::cout << "Changing default workday length:\nHours: ";
+					std::cin >> default_daylength.hours;
+					std::cin.ignore();
+					break;
+				case 's':
+					{
+					std::cout << "Changing social cost percentage:\nSocial cost %";
+					int social_input = 0;
+					std::cin >> social_input;
+					std::cin.ignore();
+					social_costs = (social_input+100.0f)/100.0f;
+					break;
+					}
+				default:
+					std::cout << "ERROR: That's not a valid char, ya doofus." << std::endl;
+			}
+		}
+setup_done:
+		std::cout << CLEAR;
+		
+		//number_of_days = 1; // Just here for debugging
 		std::vector<workday> workdays;
 		
 		moment previous_wrap{0, 16, 20, 11, 1000}; // Set to a long time ago
@@ -71,37 +123,37 @@ int main(int argc, char* argv[])
 			moment lunch_end = lunch_start+(delta){30,0,0};
 			
 			while(1) {
-				std::cout << "\033[2J\033[1;1H";
+				std::cout << CLEAR;
 				std::cout << "\n------------- DAY " << day+1 << " -------------\n";
-				std::cout << "[1] Calltime: " << timeprint(calltime) << "\n";
-				std::cout << "[2] Wraptime: " << timeprint(wraptime) << "\n";
-				std::cout << "[3] Planned wrap: " << timeprint(planned_wraptime) << "\n";
-				std::cout << "[4] Lunch: " << timeprint((timeblock){lunch_start, lunch_end}) << "\n" << std::endl;
+				std::cout << "[c] Calltime: " << timeprint(calltime) << "\n";
+				std::cout << "[w] Wraptime: " << timeprint(wraptime) << "\n";
+				std::cout << "[p] Planned wrap: " << timeprint(planned_wraptime) << "\n";
+				std::cout << "[l] Lunch: " << timeprint((timeblock){lunch_start, lunch_end}) << "\n";
 				// TODO: Add second lunch option
 				
-				std::cout << "Write the number for what you want to change, or 0 to go to the next day." << std::endl;
+				std::cout << "\nWrite the letter for what you want to change, or 0 to go to the next day." << std::endl;
 				
-				int input_number = 8;
-				std::cin >> input_number;
+				char input_char = '5';
+				std::cin >> input_char;
 				std::cin.ignore();
 				
 				std::cout << "\n";
-				switch (input_number) {
-					case 0:
+				switch (input_char) {
+					case '0':
 						goto done;
-					case 1:
+					case 'c':
 						std::cout << "Changing calltime.\n";
 						calltime = timeinput();
 						break;
-					case 2:
+					case 'w':
 						std::cout << "Changing actual wraptime.\n";
 						wraptime = timeinput(calltime);
 						break;
-					case 3:
+					case 'p':
 						std::cout << "Changing planned wraptime.\n";
 						planned_wraptime = timeinput(calltime);
 						break;
-					case 4:
+					case 'l':
 						std::cout << "Changing lunch-time.\n";
 						std::cout << "Lunch start:\n";
 						lunch_start = timeinput(calltime);
@@ -109,7 +161,7 @@ int main(int argc, char* argv[])
 						lunch_end = timeinput(calltime);
 						break;
 					default:
-						std::cout << "ERROR: That's not a valid number, ya doofus. 1, 2, 3, 4 or 0 only." << std::endl;
+						std::cout << "ERROR: That's not a valid number, ya doofus." << std::endl;
 				}
 			}
 done:
@@ -135,11 +187,12 @@ done:
 			
 			// This assumes that the user is entering things chronologically, which they may not be
 			previous_wrap = wraptime;
-			std::cout << "\033[2J\033[1;1H";
+			std::cout << CLEAR;
 		}
 		std::cout << "\n\n\n -+-+-+-+-+-+-+- CALCULATION -+-+-+-+-+-+-+-\n\n";
 		std::cout << "Dayrate: " << dayrate << "\n";
 		std::cout << "Hourly rate: " << hourly_rate << "\n";
+		std::cout << "Social costs: " << (social_costs-1)*100 << "%\n";
 		
 		double total_sum = 0;
 		for(int ii=0; ii < number_of_days; ii++) {
@@ -157,7 +210,8 @@ done:
 			total_sum += day_price;
 		}
 		
-		std::cout << "\nSUM: " << total_sum << std::endl;
+		std::cout << "\nSum: " << total_sum;
+		std::cout << "\nTotal: " << total_sum*social_costs << std::endl;
 		
 		
 		return 0;

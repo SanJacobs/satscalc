@@ -176,12 +176,8 @@ workday::workday(const moment& previous_wrap,
 		}
 	}
 	
-	//std::cout << "Splitting finished." << std::endl;
-	
 	blocks[j++] = initial_block;
 	total_timeblocks = j;
-	
-	//std::cout << "Splitting completely finished." << std::endl;
 	
 	// THE VALUE-FACTOR CALCULATION PART
 	
@@ -189,8 +185,7 @@ workday::workday(const moment& previous_wrap,
 	// Including, Easter and other holidays
 	// TODO: Implement a good system for this fuckin' paragraph:
 	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
-	// TODO: And this paragraph, which seems to say that planned being beyond actual wrap is a relevant case
-	// Varslet overtid som ikke benyttes honoreres med inntil to timer etter de vanlige overtidssatser, dog slik at én time av den ubenyttede overtiden ikke honoreres.
+	
 	// TODO: Add reasons for the upped valuefactors.
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
