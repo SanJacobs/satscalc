@@ -2,8 +2,13 @@
 # Example: -I /usr/include/boost/
 INCLUDE=
 
+# Compiler. Pretty self-explanatory.
+CXX = g++
+
 # Enabling C++17 mode so I can have more <algorithm> stuff
-CFLAGS=-std=c++17
+CVERSION=-std=c++17
+
+CFLAGS=
 
 # LIBDIR is where you can find the linkable objects or whatever. They are used for the linking stage.
 LIBDIR=-L /usr/lib/x86_64-linux-gnu/
@@ -19,11 +24,11 @@ OBJECTS=$(patsubst src/%.cpp, $(OBJDIR)%.o, $(SOURCES))
 # This last line creates an identical list of objects based on the list of .cpp files.
 
 a.out: $(OBJECTS)
-	g++ $(LIBDIR) $(CFLAGS) $(LIBS) $(OBJECTS)
+	$(CXX) $(LIBDIR) $(CVERSION) $(CFLAGS) $(LIBS) $(OBJECTS)
 
 $(OBJECTS): obj/%.o : src/%.cpp
 	mkdir -p obj
-	g++ -g $(INCLUDE) $(CFLAGS) -c $< -o $@
+	$(CXX) -g $(INCLUDE) $(CVERSION) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm obj/*.o
@@ -33,3 +38,4 @@ cleanall:
 
 install: a.out
 	cp a.out /usr/bin/satscalc
+
