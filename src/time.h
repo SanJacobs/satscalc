@@ -4,7 +4,6 @@
 #include <ios>
 #include <iomanip>
 #include <string.h>
-#include <vector>
 #include <algorithm>
 
 enum weekday{
@@ -79,6 +78,7 @@ struct workday{
 				const moment& calltime,
 				const moment& wraptime,
 				const moment& planned_wraptime);
+	workday(){};
 	void lunch(const moment& lunch_start, const moment& lunch_end);
 };
 
