@@ -11,7 +11,8 @@ CVERSION=-std=c++17
 CFLAGS=
 
 # LIBDIR is where you can find the linkable objects or whatever. They are used for the linking stage.
-LIBDIR=-L /usr/lib/x86_64-linux-gnu/
+# -L /usr/lib/x86_64-linux-gnu/
+LIBDIR=
 
 # LIBS are the libs you are using written with a -l and then ignoring the lib-part at the beginning of the file's name.
 # So "libboost_date_time.a" will be just "-lboost_date_time"
