@@ -22,7 +22,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 #include "time.h"
 #include "test.h"
 
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
     #define CLEAR std::system("cls")
 #else
     #define CLEAR std::cout << "\033[2J\033[1;1H"

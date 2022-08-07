@@ -30,6 +30,12 @@ $(OBJECTS): obj/%.o : src/%.cpp
 	mkdir -p obj
 	$(CXX) -g $(INCLUDE) $(CVERSION) $(CFLAGS) -c $< -o $@
 
+windows: 
+	zig c++ -target x86_64-windows-gnu src/*.cpp -std=c++17 -g -gcodeview
+
+windows32: 
+	zig c++ -target i386-windows-gnu src/*.cpp -std=c++17 -g -gcodeview
+
 clean:
 	rm obj/*.o
 
