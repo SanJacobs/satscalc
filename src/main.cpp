@@ -205,8 +205,35 @@ done:
 			for(int jj=0; jj < each_day.total_timeblocks; jj++) {
 				timeblock& each_block = each_day.blocks[jj];
 				double block_price = each_block.hourcount() * hourly_rate * each_block.valuefactor;
-				std::cout << timeprint(each_block, true) << ", " << each_block.hourcount() << "h\t+" << (each_block.valuefactor-1)*100 << "%\t= " << block_price << "\n";
+				
+				std::cout << timeprint(each_block, true) << ", "
+						<< each_block.hourcount() << "h\t+"
+						<< (each_block.valuefactor-1)*100 << "%\t= "
+						<< block_price;
+				//if(each_block.price_reason != "Norm") {
+					std::cout << "  \t[" << each_block.price_reason << "]";
+				//}
+				std::cout << "\n";
+				
 				day_price += block_price;
+			}
+			
+			double day_length = (timeblock){each_day.call, each_day.wrap}.hourcount();
+			
+			if((each_day.call.hours < 6 || each_day.call.hours >= 22) &&
+					(each_day.wrap.hours < 6 || each_day.wrap.hours >= 22) &&
+					day_length < 9)
+			{
+				std::cout << "Day set entirely between 22:00 and 06:00.\nPrice is dayrate plus 100% for hours worked. [§6.12B]\n";
+				day_price = dayrate + (day_length * hourly_rate);
+				
+			} else if((each_day.call.hours <  6  || each_day.call.hours >= 10) &&
+					(each_day.wrap.hours >= 22 || each_day.wrap.hours <= 10)){
+					if(day_price < dayrate){
+						day_price = dayrate;
+						
+						std::cout << "Offset day at least partially set between 22:00 and 06:00.\nMinimum price is full dayrate. [§6.12A]\n";
+					}
 			}
 			std::cout << "Price of day " << ii+1 << ": " << day_price << std::endl;
 			total_sum += day_price;

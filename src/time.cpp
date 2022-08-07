@@ -192,18 +192,18 @@ workday::workday(const moment& previous_wrap,
 		timeblock& each_block = blocks[ii];
 		//std::cout << "pricing: " << timeprint(each_block) << std::endl;
 		
-		if(each_block.end <= splitpoints[0]) each_block.upvalue(3); // +200% for sleep-breach
-		if(each_block.start.hours >= 22) each_block.upvalue(2);			// Work between 22:00
+		if(each_block.end <= splitpoints[0]) each_block.upvalue(3, "Sleep-breach"); // +200% for sleep-breach
+		if(each_block.start.hours >= 22) each_block.upvalue(2, "Night");			// Work between 22:00
 		if((each_block.end.hours == 6 && each_block.end.minutes == 0) ||// And 06:00
-		   (each_block.end.hours <= 5)) each_block.upvalue(2);			// is +100%
-		if(each_block.start >= splitpoints[3]) {each_block.upvalue(1.5); // Overtime
-			if(each_block.start.getweekday() == saturday) each_block.upvalue(2);// on saturdays
+		   (each_block.end.hours <= 5)) each_block.upvalue(2, "Night");			// is +100%
+		if(each_block.start >= splitpoints[3]) {each_block.upvalue(1.5, "Overtime"); // Overtime
+			if(each_block.start.getweekday() == saturday) each_block.upvalue(2, "Saturday overtime");// on saturdays
 		}
 		if(each_block.start >= planned_wraptime &&							// Unwarned overtime
-				each_block.start >= splitpoints[4]) each_block.upvalue(2);	// +100% after first hour
-		if(each_block.start >= splitpoints[6]) each_block.upvalue(3); // +200% beyond 14-hour mark
-		if(each_block.start.getweekday() == saturday) each_block.upvalue(1.5);// Saturdays are +50%
-		if(each_block.start.getweekday() == sunday) each_block.upvalue(2); // Sundays are +100%
+				each_block.start >= splitpoints[4]) each_block.upvalue(2, "Overtime");	// +100% after first hour
+		if(each_block.start >= splitpoints[6]) each_block.upvalue(3, "Far overtime"); // +200% beyond 14-hour mark
+		if(each_block.start.getweekday() == saturday) each_block.upvalue(1.5, "Saturday");// Saturdays are +50%
+		if(each_block.start.getweekday() == sunday) each_block.upvalue(2, "Sunday"); // Sundays are +100%
 	}
 	
 }
@@ -267,8 +267,11 @@ double timeblock::hourcount() {
 			timedelta.days*24);
 }
 
-float timeblock::upvalue(float suggestion){
-	if(suggestion>valuefactor) valuefactor = suggestion;
+float timeblock::upvalue(float suggestion, std::string reason){
+	if(suggestion>valuefactor) {
+		valuefactor  = suggestion;
+		price_reason = reason;
+	}
 	return valuefactor;
 }
 
@@ -303,6 +306,7 @@ timeblock timesplit(timeblock& input_block, const moment splitpoint) {
 	}
 	timeblock output{input_block.start, splitpoint};
 	output.valuefactor = input_block.valuefactor;
+	output.price_reason = input_block.price_reason;
 	input_block.start = splitpoint; // Note: Now, reversed.
 	return output;
 }

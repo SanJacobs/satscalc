@@ -48,7 +48,8 @@ struct timeblock{
 	moment end;
 	double hourcount();
 	float valuefactor = 1;
-	float upvalue(float suggestion);
+	float upvalue(float suggestion, std::string reason);
+	std::string price_reason = "Norm";
 };
 
 struct workday{
