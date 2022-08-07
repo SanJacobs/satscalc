@@ -29,7 +29,7 @@ And if you want to install it, do:
 sudo make install
 ```
 
-### 🪟 Windows / cross-compilation
+### 🪟 Windows / cross-compilation ⚡
 
 You'll need `zig` (Tested with 0.9.1) and `make`.
 
