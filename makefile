@@ -43,5 +43,5 @@ cleanall:
 	rm obj/*.o a.out
 
 install: a.out
-	cp a.out /usr/bin/satscalc
+	cp a.out /usr/local/bin/satscalc
 
