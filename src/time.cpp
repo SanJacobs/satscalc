@@ -10,8 +10,8 @@
 // --- OPERATOR OVERLOADS ---
 //
 
-long sortable_time(const moment input_moment) {
-		return stol(std::to_string(input_moment.year)+
+long long sortable_time(const moment input_moment) {
+		return stoll(std::to_string(input_moment.year)+
 		padint(input_moment.month,2)+
 		padint(input_moment.day,2)+
 		padint(input_moment.hours,2)+

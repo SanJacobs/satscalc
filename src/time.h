@@ -98,7 +98,7 @@ std::string timeprint(const moment input_moment);
 std::string timeprint(const moment input_moment, bool clockonly);
 std::string timeprint(const timeblock input_timeblock);
 std::string timeprint(const timeblock input_timeblock, bool clockonly);
-long sortable_time(const timeblock input_timeblock);
+long long sortable_time(const timeblock input_timeblock);
 
 moment timeinput(moment input_moment);
 moment timeinput();
