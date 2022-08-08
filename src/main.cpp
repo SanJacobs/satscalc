@@ -228,7 +228,7 @@ done:
 				day_price = dayrate + (day_length * hourly_rate);
 				
 			} else if((each_day.call.hours <  6  || each_day.call.hours >= 10) &&
-					(each_day.wrap.hours >= 22 || each_day.wrap.hours <= 10)){
+					(each_day.wrap.hours > 22 || each_day.wrap.hours <= 10)){
 					if(day_price < dayrate){
 						day_price = dayrate;
 						
