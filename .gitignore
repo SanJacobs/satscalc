@@ -6,5 +6,5 @@ satscalc
 satscalc.exe
 satscalc32.exe
 notes.txt
-a.pdb
+*.pdb
 remedy.rdbg

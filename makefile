@@ -28,7 +28,7 @@ a.out: $(OBJECTS)
 	$(CXX) $(LIBDIR) $(CVERSION) $(CFLAGS) $(LIBS) $(OBJECTS) -o satscalc
 
 $(OBJECTS): obj/%.o : src/%.cpp
-	mkdir -p obj
+	mkdir -p $(OBJDIR)
 	$(CXX) -g $(INCLUDE) $(CVERSION) $(CFLAGS) -c $< -o $@
 
 windows: 
@@ -37,6 +37,9 @@ windows:
 windows32: 
 	zig c++ -target i386-windows-gnu src/*.cpp $(CVERSION) -g -gcodeview -o satscalc32.exe
 
+mac: 
+	zig c++ -target x86_64-macos-gnu src/*.cpp $(CVERSION) -g -gcodeview -o satscalc
+	
 clean:
 	rm obj/*.o
 
