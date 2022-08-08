@@ -1,4 +1,4 @@
-./a.out <<EOF-MARKER
+./satscalc <<EOF-MARKER
 3462
 10
 0

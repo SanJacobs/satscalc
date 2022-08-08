@@ -25,17 +25,17 @@ OBJECTS=$(patsubst src/%.cpp, $(OBJDIR)%.o, $(SOURCES))
 # This last line creates an identical list of objects based on the list of .cpp files.
 
 a.out: $(OBJECTS)
-	$(CXX) $(LIBDIR) $(CVERSION) $(CFLAGS) $(LIBS) $(OBJECTS)
+	$(CXX) $(LIBDIR) $(CVERSION) $(CFLAGS) $(LIBS) $(OBJECTS) -o satscalc
 
 $(OBJECTS): obj/%.o : src/%.cpp
 	mkdir -p obj
 	$(CXX) -g $(INCLUDE) $(CVERSION) $(CFLAGS) -c $< -o $@
 
 windows: 
-	zig c++ -target x86_64-windows-gnu src/*.cpp -std=c++17 -g -gcodeview
+	zig c++ -target x86_64-windows-gnu src/*.cpp $(CVERSION) -g -gcodeview -o satscalc.exe
 
 windows32: 
-	zig c++ -target i386-windows-gnu src/*.cpp -std=c++17 -g -gcodeview
+	zig c++ -target i386-windows-gnu src/*.cpp $(CVERSION) -g -gcodeview -o satscalc32.exe
 
 clean:
 	rm obj/*.o
@@ -44,5 +44,8 @@ cleanall:
 	rm obj/*.o a.out
 
 install: a.out
-	cp a.out /usr/local/bin/satscalc
+	cp satscalc /usr/local/bin/satscalc
+
+test: a.out
+	./test.sh
 
