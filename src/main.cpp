@@ -242,7 +242,8 @@ done:
 	std::cout << "\nSum: " << total_sum;
 	std::cout << "\nTotal: " << total_sum*social_costs << std::endl;
 	
-	
+	std::cin.get();
+	std::cin.ignore();
 	return 0;
 }
 
