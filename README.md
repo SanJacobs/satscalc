@@ -3,17 +3,11 @@
 # satscalc
 A calculator to help with invoicing for Norwegian film crew members.
 
-At first the intention was to make a simple Python script that does what I needed it to do.
-However, it turns out that I don't like python that much anymore, so here we go with making it in C++.
-
-It's basically in a usable state now, the first proper alpha release is coming up.
-
-Currently, the only ruleset it follows is the one for advertisement and short-term work.
-Others may be added in the future.
+You put in the time you worked, and it produces a nice receipt that you can copy-paste.
 
 ## Building from source
 
-### 🐧 Linux and (probably) MacOS 🍎
+### 🐧 Linux and MacOS 🍎
 
 You'll need `gcc` and `make`.
 
@@ -42,7 +36,49 @@ make windows
 ```
 Or `make windows32` if you need a 32-bit binary.
 
-## Disclaimer
+## State of development
 
-This is free software with ABSOLUTELY NO WARRENTY.\
+It's basically in a usable state now, the first proper alpha release is coming up.
+
+Currently, the only ruleset implemented is the one for advertisement and short-term work.
+Others may be added in the future.
+
+Code is not yet law, so the [source of this ruleset](https://filmforbundet.no/wp-content/uploads/2022/04/Reklameoverenskomsten.pdf) is flawed, because it has never had to compile.
+It is full of would-be unlit code paths, undefined cases and strangenesses.
+On top of this, the interpreter is me, a flawed human being, and so there is no guarantee of correctness.
+
+However, in my flawed human opinion, I think it is pretty much on the money.
+
+## Known issues
+
+Any known issues should be solved in a way which would not anger producers nor crew.
+Which is an impossibility, but I try.
+
+Descriptions here are a simplifications and does not fully encapsulate the solutions as implemented in the code.
+Before you complain about any solution, read the code.
+
+The main known issue is that in practice, advertisement and short-term jobs don't usually have a defined "normal" workday, because they're by definition only a few days, often all with different crew call times.
+Yet, the ruleset bases multiple rules off of this variable (which, as mentioned, oft goes undefined).
+This means there is no implementation of "overtime" before the "normal" workday has started, because there is no normal.
+Overtime is assumed to come beyond 8 hours after the call time.
+
+There is a separate host of rules for work where you're staying and sleeping on-location.
+These rules are not covered.
+Aside from the rule about pay on holidays, which strangely appears in this section, despite seeming to apply outside of cases where you sleep on-location.
+
+## License
+
+Copyright (C) 2022 Sander Skjegstad
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
 This software does NOT give financial advice.
+
