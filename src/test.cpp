@@ -71,6 +71,15 @@ void test(){
 	std::cout << "\nRewinding 10 days...\n";
 	wind(testtime, 0, 0, -10);
 	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+
+	std::cout << "\nForwarding 100 days...\n";
+	wind(testtime, 0, 0, 100);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
+
+	std::cout << "\nRewinding 100 days...\n";
+	wind(testtime, 0, 0, -100);
+	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
 	
 	
 	

@@ -135,7 +135,7 @@ workday::workday(const moment& previous_wrap,
 			call+(delta){0, 4, 0})}; 
 		//  ^ Minimum 4 hour day ^
 	
-	const int sp_length = 10;
+	const int sp_length = 11;
 	moment splitpoints[sp_length]{ // --$-- Points where the price may change --$-- //
 		
 		// NOTE: Maybe this should also contain the valuefactor associated with the split.
@@ -144,22 +144,23 @@ workday::workday(const moment& previous_wrap,
 		// Or maybe I should just implement this badly at first just to get it working, and replace it later?
 		
 		previous_wrap+(delta){0, 10, 0}, // Sleepbreach, 10 hours after previous wrap			0x
-		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5				1
+		(moment){0, 5, call.day, call.month, call.year}, // 2 hours before 7, aka 5				1x
 		(moment){0, 6, call.day, call.month, call.year}, // 6 in the morning					2x
 		call+(delta){0, 8, 0}, // Normal 8 hours of work										3x
 		call+(delta){0, 9, 0}, // 1st hour of overtime is over									4x
-		planned_wraptime, // End of warned overtime												5x
-		call+(delta){0, 14, 0}, // The 14-hour mark												6x
-		(moment){0, 22, call.day, call.month, call.year}, // 22:00 in the evening				7x
-		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 1, 0}, // Midnight			8x
-		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 7, 0}, // 6, next morning	9x
+		call+(delta){0, 11, 0}, // 3st hour of overtime is over									5x
+		planned_wraptime, // End of warned overtime												6x
+		call+(delta){0, 14, 0}, // The 14-hour mark												7x
+		(moment){0, 22, call.day, call.month, call.year}, // 22:00 in the evening				8x
+		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 1, 0}, // Midnight			9x
+		(moment){0, 23, call.day, call.month, call.year}+(delta){0, 7, 0}, // 6, next morning	10x
 	};
 	
 	// Eliminate planned wrap, if it occurs within normal 8-hour period.
 	// This is to make sure the first period of time becomes a pure 8 hours,
 	// which makes detecting the main section of the workday easier.
-	if(splitpoints[5] < splitpoints[3]){
-		splitpoints[5] = splitpoints[3];
+	if(splitpoints[6] < splitpoints[3]){
+		splitpoints[6] = splitpoints[3];
 	}
 	
 	moment splitpoints_sorted[sp_length];
@@ -181,12 +182,8 @@ workday::workday(const moment& previous_wrap,
 	
 	// THE VALUE-FACTOR CALCULATION PART
 	
-	// TODO: Complete the valuefactor calculation ruleset
-	// Including, Easter and other holidays
-	// TODO: Implement a good system for this fuckin' paragraph:
-	// A. 50 % tillegg for arbeid inntil 2 timer før, eller inntil 3 timer etter ordinær arbeidstid når arbeidstiden ikke er forskjøvet og overtiden er varslet. Dersom det varsles overtid både før og etter ordinær arbeidstid betales de to første timene med 50 % tillegg og de øvrige med 100 % tillegg.
-	
-	// TODO: Add reasons for the upped valuefactors.
+	// TODO: Test holidays
+	// TODO: Consider replacing splitpoints[x] with redoing the math for code flexibility?
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
 		timeblock& each_block = blocks[ii];
@@ -199,11 +196,39 @@ workday::workday(const moment& previous_wrap,
 		if(each_block.start >= splitpoints[3]) {each_block.upvalue(1.5, "Overtime"); // Overtime
 			if(each_block.start.getweekday() == saturday) each_block.upvalue(2, "Saturday overtime");// on saturdays
 		}
+		if(each_block.start >= splitpoints[5]) each_block.upvalue(2, "Overtime"); // End of 3-hour cheap planned overtime
 		if(each_block.start >= planned_wraptime &&							// Unwarned overtime
 				each_block.start >= splitpoints[4]) each_block.upvalue(2, "Overtime");	// +100% after first hour
-		if(each_block.start >= splitpoints[6]) each_block.upvalue(3, "Far overtime"); // +200% beyond 14-hour mark
+		if(each_block.start >= splitpoints[7]) each_block.upvalue(3, "Far overtime"); // +200% beyond 14-hour mark
 		if(each_block.start.getweekday() == saturday) each_block.upvalue(1.5, "Saturday");// Saturdays are +50%
 		if(each_block.start.getweekday() == sunday) each_block.upvalue(2, "Sunday"); // Sundays are +100%
+		
+		if(!(call < (moment){0, 7, call.day, call.month, call.year} && // On an offset day...
+		   std::min(call+(delta){0,8,0}, wrap) < (moment){0,17,call.day,call.month,call.year})) {
+				// This was added for rule 6.11c, but in a world without a defined normal workday,
+				// that rule is already covered already by 6.11g, so this is empty.
+		}
+		
+		// Holidays!
+		if(each_block.start.day==1 && each_block.start.month==1) each_block.upvalue(2, "New year");
+		if(each_block.start.day==1 && each_block.start.month==5) each_block.upvalue(2, "1st of May");
+		if(each_block.start.day==17 && each_block.start.month==5) each_block.upvalue(2, "17st of May");
+		if((each_block.start.day==25 || each_block.start.day==26) && each_block.start.month==12)
+			each_block.upvalue(2, "Christmas");
+		moment easter = gaussEaster(each_block.start.year);
+		if(each_block.start.day == (easter-(delta){0,0,-3}).day &&
+		   each_block.start.month == (easter-(delta){0,0,-3}).month) each_block.upvalue(2, "Maundy Thursday");
+		if(each_block.start.day == (easter-(delta){0,0,-2}).day &&
+		   each_block.start.month == (easter-(delta){0,0,-2}).month) each_block.upvalue(2, "Good Friday");
+		if(each_block.start.day == easter.day && each_block.start.month == easter.month) each_block.upvalue(2, "Easter");
+		if(each_block.start.day == (easter-(delta){0,0,1}).day &&
+		   each_block.start.month == (easter-(delta){0,0,1}).month) each_block.upvalue(2, "Easter");
+		if(each_block.start.day == (easter-(delta){0,0,39}).day &&
+		   each_block.start.month == (easter-(delta){0,0,39}).month) each_block.upvalue(2, "Feast of the Ascension");
+		if(each_block.start.day == (easter-(delta){0,0,49}).day &&
+		   each_block.start.month == (easter-(delta){0,0,49}).month) each_block.upvalue(2, "Pentecost");
+		if(each_block.start.day == (easter-(delta){0,0,50}).day &&
+		   each_block.start.month == (easter-(delta){0,0,50}).month) each_block.upvalue(2, "Pentecost Monday");
 	}
 	
 }
@@ -283,10 +308,71 @@ weekday moment::getweekday() {
     return static_cast<weekday>((y + y / 4 - y / 100 + y / 400 + t[month - 1] + day - 1) % 7);
 }
 
+bool moment::isEaster() {
+	moment easter = gaussEaster(year);
+	return (easter.month==month && easter.day==day);
+}
+
 
 //
 // --- FUNCTIONS ---
 //
+
+moment gaussEaster(int year) {
+	// Thanks to Carl Friedrich Gauss for the algorythm
+	// Thanks rahulhegde97, bansal_rtk_, code_hunt, sanjoy_62, simranarora5sos and aashutoshparoha on GeeksForGeeks for the implementation I based this on.
+    float A, B, C, P, Q, M, N, D, E;
+	int easter_month = 0;
+	int easter_day = 0;
+ 
+    // All calculations done
+    // on the basis of
+    // Gauss Easter Algorithm
+    A = year % 19;
+    B = year % 4;
+    C = year % 7;
+    P = std::floor((float)year / 100.0);
+ 
+    Q = std::floor((float)(13 + 8 * P) / 25.0);
+ 
+    M = (int)(15 - Q + P - (std::floor)(P / 4)) % 30;
+ 
+    N = (int)(4 + P - (std::floor)(P / 4)) % 7;
+ 
+    D = (int)(19 * A + M) % 30;
+ 
+    E = (int)(2 * B + 4 * C + 6 * D + N) % 7;
+ 
+    int days = (int)(22 + D + E);
+	easter_day = days;
+ 
+    // A corner case,
+    // when D is 29
+    if ((D == 29) && (E == 6)) {
+		easter_month = 4;
+		easter_day = 19;
+    }
+    // Another corner case,
+    // when D is 28
+    else if ((D == 28) && (E == 6)) {
+		easter_month = 4;
+		easter_day = 18;
+    }
+    else {
+        // If days > 31, move to April
+        // April = 4th Month
+        if (days > 31) {
+			easter_month = 04;
+			easter_day = days-31;
+        }
+        else {
+            // Otherwise, stay on March
+            // March = 3rd Month
+			easter_month = 03;
+        }
+    }
+	return (moment){0,0, easter_day, easter_month, year};
+}
 
 std::string padint(const int input, const int minimum_signs) {
 	std::ostringstream output;
@@ -336,8 +422,6 @@ void wind(moment& input_moment, const int minutes, const int hours, const int da
 	}
 	
 	// Adding days
-	// XXX: This will cause trouble if you wind time by more than a month's length in days.
-	// So, let's just not do that... heh...
 	input_moment.day += days;
 	int current_month_length = days_in(input_moment.month, input_moment.year);
 	while(input_moment.day > current_month_length) {

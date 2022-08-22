@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string.h>
 #include <algorithm>
+#include <math.h>
 
 enum weekday{
 	monday,
@@ -17,9 +18,9 @@ enum weekday{
 };
 
 struct delta{
-	unsigned int minutes;
-	unsigned int hours;
-	unsigned int days;
+	signed int minutes;
+	signed int hours;
+	signed int days;
 };
 std::ostream& operator<<(std::ostream& stream, const delta& other);
 
@@ -31,6 +32,7 @@ struct moment{
 	signed int year;
 	
 	weekday getweekday();
+	bool isEaster();
 	
 	bool operator<(const moment& other) const;
 	bool operator>(const moment& other) const;
@@ -94,6 +96,8 @@ void wind(moment& input_moment, const int minutes, const int hours, const int da
 void wind(moment& input_moment, const delta& time_delta);
 
 int days_in(const int month, const int year);
+
+moment gaussEaster(int year);
 
 std::string timeprint(const moment input_moment);
 std::string timeprint(const moment input_moment, bool clockonly);
