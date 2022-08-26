@@ -6,6 +6,7 @@
 #include <string.h>
 #include <algorithm>
 #include <math.h>
+#include <cmath>
 
 enum weekday{
 	monday,

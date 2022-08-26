@@ -82,6 +82,10 @@ void test(){
 	std::cout << "Testtime: " << timeprint(testtime) << std::endl;
 	
 	
+	std::cout << "\n\n --- HOLIDAY TEST ---\n\n";
+	std::cout << "Easter 2022: " << timeprint(gaussEaster(2022)) << std::endl;
+	std::cout << "Easter 2030: " << timeprint(gaussEaster(2030)) << std::endl;
+	std::cout << "Easter 2057: " << timeprint(gaussEaster(2057)) << std::endl;
 	
 	std::cout << "\n\n --- TIME INPUT TEST ---\n\n";
 	
