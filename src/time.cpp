@@ -216,19 +216,19 @@ workday::workday(const moment& previous_wrap,
 		if((each_block.start.day==25 || each_block.start.day==26) && each_block.start.month==12)
 			each_block.upvalue(2, "Christmas");
 		moment easter = gaussEaster(each_block.start.year);
-		if(each_block.start.day == (easter-(delta){0,0,-3}).day &&
-		   each_block.start.month == (easter-(delta){0,0,-3}).month) each_block.upvalue(2, "Maundy Thursday");
-		if(each_block.start.day == (easter-(delta){0,0,-2}).day &&
-		   each_block.start.month == (easter-(delta){0,0,-2}).month) each_block.upvalue(2, "Good Friday");
+		if(each_block.start.day == (easter-(delta){0,0,3}).day &&
+		   each_block.start.month == (easter-(delta){0,0,3}).month) each_block.upvalue(2, "Maundy Thursday");
+		if(each_block.start.day == (easter-(delta){0,0,2}).day &&
+		   each_block.start.month == (easter-(delta){0,0,2}).month) each_block.upvalue(2, "Good Friday");
 		if(each_block.start.day == easter.day && each_block.start.month == easter.month) each_block.upvalue(2, "Easter");
-		if(each_block.start.day == (easter-(delta){0,0,1}).day &&
-		   each_block.start.month == (easter-(delta){0,0,1}).month) each_block.upvalue(2, "Easter");
-		if(each_block.start.day == (easter-(delta){0,0,39}).day &&
-		   each_block.start.month == (easter-(delta){0,0,39}).month) each_block.upvalue(2, "Feast of the Ascension");
-		if(each_block.start.day == (easter-(delta){0,0,49}).day &&
-		   each_block.start.month == (easter-(delta){0,0,49}).month) each_block.upvalue(2, "Pentecost");
-		if(each_block.start.day == (easter-(delta){0,0,50}).day &&
-		   each_block.start.month == (easter-(delta){0,0,50}).month) each_block.upvalue(2, "Pentecost Monday");
+		if(each_block.start.day == (easter+(delta){0,0,1}).day &&
+		   each_block.start.month == (easter+(delta){0,0,1}).month) each_block.upvalue(2, "Easter");
+		if(each_block.start.day == (easter+(delta){0,0,39}).day &&
+		   each_block.start.month == (easter+(delta){0,0,39}).month) each_block.upvalue(2, "Feast of the Ascension");
+		if(each_block.start.day == (easter+(delta){0,0,49}).day &&
+		   each_block.start.month == (easter+(delta){0,0,49}).month) each_block.upvalue(2, "Pentecost");
+		if(each_block.start.day == (easter+(delta){0,0,50}).day &&
+		   each_block.start.month == (easter+(delta){0,0,50}).month) each_block.upvalue(2, "Pentecost Monday");
 	}
 	
 }

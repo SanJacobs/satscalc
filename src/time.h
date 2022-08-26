@@ -19,9 +19,9 @@ enum weekday{
 };
 
 struct delta{
-	signed int minutes;
-	signed int hours;
-	signed int days;
+	unsigned int minutes;
+	unsigned int hours;
+	unsigned int days;
 };
 std::ostream& operator<<(std::ostream& stream, const delta& other);
 
