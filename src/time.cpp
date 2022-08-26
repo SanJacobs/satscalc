@@ -182,7 +182,6 @@ workday::workday(const moment& previous_wrap,
 	
 	// THE VALUE-FACTOR CALCULATION PART
 	
-	// TODO: Test holidays
 	// TODO: Consider replacing splitpoints[x] with redoing the math for code flexibility?
 	
 	for(int ii=0; ii < total_timeblocks; ii++){
