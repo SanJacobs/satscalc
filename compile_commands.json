@@ -9,9 +9,9 @@
       "-o",
       "obj/main.o"
     ],
-    "directory": "/home/san/programming/satscalc",
-    "file": "/home/san/programming/satscalc/src/main.cpp",
-    "output": "/home/san/programming/satscalc/obj/main.o"
+    "directory": "/home/san/Programming/satscalc",
+    "file": "/home/san/Programming/satscalc/src/main.cpp",
+    "output": "/home/san/Programming/satscalc/obj/main.o"
   },
   {
     "arguments": [
@@ -23,9 +23,9 @@
       "-o",
       "obj/test.o"
     ],
-    "directory": "/home/san/programming/satscalc",
-    "file": "/home/san/programming/satscalc/src/test.cpp",
-    "output": "/home/san/programming/satscalc/obj/test.o"
+    "directory": "/home/san/Programming/satscalc",
+    "file": "/home/san/Programming/satscalc/src/test.cpp",
+    "output": "/home/san/Programming/satscalc/obj/test.o"
   },
   {
     "arguments": [
@@ -37,8 +37,8 @@
       "-o",
       "obj/time.o"
     ],
-    "directory": "/home/san/programming/satscalc",
-    "file": "/home/san/programming/satscalc/src/time.cpp",
-    "output": "/home/san/programming/satscalc/obj/time.o"
+    "directory": "/home/san/Programming/satscalc",
+    "file": "/home/san/Programming/satscalc/src/time.cpp",
+    "output": "/home/san/Programming/satscalc/obj/time.o"
   }
 ]
