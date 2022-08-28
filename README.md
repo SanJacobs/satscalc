@@ -38,7 +38,7 @@ Or `make windows32` if you need a 32-bit binary.
 
 ## State of development
 
-It's basically in a usable state now, the first proper alpha release is coming up.
+It's basically in a usable state now.
 
 Currently, the only ruleset implemented is the one for advertisement and short-term work.
 Others may be added in the future.
