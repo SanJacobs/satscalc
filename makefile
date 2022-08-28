@@ -47,13 +47,12 @@ mac:
 	zig c++ -target x86_64-macos-gnu src/*.cpp $(CVERSION) $(CFLAGS) -o $(NAME)
 
 release:
-	mkdir -p bin/linux
-	make CFLAGS=-O2 NAME=bin/linux/$(NAME)-$(V)
-	mkdir -p bin/mac
-	make mac CFLAGS=-O2 NAME=bin/mac/$(NAME)-$(V)
-	mkdir -p bin/windows
-	make windows WINFLAGS="-O2 --static" NAME=bin/windows/$(NAME)-$(V)
-	make windows32 WINFLAGS="-O2 --static" NAME=bin/windows/$(NAME)-$(V)-win32
+	mkdir -p bin
+	make CFLAGS=-O2 NAME=bin/$(NAME)-$(V)-linux
+	make mac CFLAGS=-O2 NAME=bin/$(NAME)-$(V)-macOS
+	make windows WINFLAGS="-O2 --static" NAME=bin/$(NAME)-$(V)-win64
+	make windows32 WINFLAGS="-O2 --static" NAME=bin/$(NAME)-$(V)-win32
+	chmod +x bin/*
 
 clean:
 	rm -f obj/*.o
