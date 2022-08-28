@@ -1,5 +1,6 @@
 __pycache__
 obj/*.o
+bin/
 a.out
 a.exe
 satscalc
