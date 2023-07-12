@@ -1,3 +1,5 @@
+# ⚠ THIS REPO IS OUT OF DATE, GO TO [GIT.SPARKBURST.NET](https://git.sparkburst.net/satscalc/about/) FOR THE LATEST VERSION
+
 ![satscalc logotype vector](https://user-images.githubusercontent.com/21090839/164118463-ca2ab578-3347-4764-bc74-dae629646a89.svg)
 
 # satscalc
